@@ -6,6 +6,7 @@
 
 # This code is to be run from a Raspberry Pi 3. It'll hopefully read in serial data through the UART and save the raw 
 # data in 4 separate text files. 
+# Joe Sommer 2017 
 
 
 import serial 
