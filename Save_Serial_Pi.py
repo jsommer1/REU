@@ -32,7 +32,8 @@ ppg = open('PPGDATA.txt', 'w+')
 
 # Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
 while True:                    
-    ser.reset_input_buffer()   # Clears serial input
+    #ser.reset_input_buffer()   # Clears serial input
+    ser.flushInput() # TEST 
     time.sleep(0.001)          # Waits 1ms before checking for silence 
     if (ser.in_waiting <= 0):  # Moves on w/ rest of program if silent period is reached
         break
