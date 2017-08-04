@@ -11,6 +11,7 @@
 import serial 
 import time
 import struct
+import datetime
 
 
 # Initializes serial connection 
@@ -24,11 +25,12 @@ ser.open()
 
 
 # Creates 4 text files to save data from different leads: ECG1, ECG2, Resp, and PPG
-# TO DO: Figure out how to create new docs each time instead of opening same ones
-ecg1 = open('ECG1DATA.txt', 'w+')  
-ecg2 = open('ECG2DATA.txt', 'w+')
-resp = open('RESPDATA.txt', 'w+')
-ppg = open('PPGDATA.txt', 'w+')
+rightnow = datetime.datetime.now()
+
+ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'w+')  
+ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'w+')
+resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'w+')
+ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'w+')
 
 
 # Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
