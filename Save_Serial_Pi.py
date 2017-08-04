@@ -52,8 +52,10 @@ start_time = time.process_time()
 # Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
     if (ser.in_waiting >= 12): 
-        for i in range(0,12):
-            packet[i] = ser.read()
+        #for i in range(0,12):
+         #   packet[i] = ser.read()
+        for byte in packet: 
+            byte = ser.read()
         ecg1_entry = struct.unpack('H', packet[2:4])
         ecg1.write(ecg1_entry)
         ecg2_entry = struct.unpack('H', packet[4:6])
