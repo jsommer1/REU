@@ -17,9 +17,15 @@ import datetime
 ser = serial.Serial() 
 ser.bytesize = 8      
 ser.baudrate = 115200  
-ser.port = '/dev/ttyAMA0'  #Please work...  
-#ser.timeout = 3  # Probably delete this line later 
-TIMEOUT = 3 # Set a 3-second timeout, stops reading data after 3 seconds. Set manual user input later 
+ser.port = '/dev/ttyAMA0'    
+TIMEOUT = 3
+dummy = 1
+while dummy == 1:    # Stops reading data after TIMEOUT seconds. User inputs value for TIMEOUT
+    try:
+        TIMEOUT = int(input("Enter runtime in seconds: "))   
+        dummy = 0
+    except ValueError:
+        print('Please enter a valid runtime.')
 ser.open() 
 
 
@@ -70,12 +76,6 @@ while True:
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
-        
-## THIS PART IS PROBABLY OBSOLETE ##         
-# Reads serial data and stores it in the text file 
-#while True:              # Should be a continuous loop while serial data is coming in
-#    x = ser.readline()   # I'm about 95% sure it's readline() here; if not, replace w/ read()
-#    f.write(x)           # This should add the current line of data to the file SAVEDATA.txt 
 
 
 # Closes everything     
