@@ -24,6 +24,7 @@ ser.open()
 
 
 # Creates 4 text files to save data from different leads: ECG1, ECG2, Resp, and PPG
+# TO DO: Figure out how to create new docs each time instead of opening same ones
 ecg1 = open('ECG1DATA.txt', 'w+')  
 ecg2 = open('ECG2DATA.txt', 'w+')
 resp = open('RESPDATA.txt', 'w+')
