@@ -3,7 +3,6 @@
 
 # In[ ]:
 
-
 # This code is to be run from a Raspberry Pi 3. It'll hopefully read in serial data through the UART and save the raw 
 # data in 4 separate text files. 
 
@@ -27,10 +26,10 @@ ser.open()
 # Creates 4 text files to save data from different leads: ECG1, ECG2, Resp, and PPG
 rightnow = datetime.datetime.now()
 
-ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'w+')  
-ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'w+')
-resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'w+')
-ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'w+')
+ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'a')  
+ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'a')
+resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'a')
+ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'a')
 
 
 # Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
@@ -56,14 +55,18 @@ while True:
          #   packet[i] = ser.read()
         for byte in packet: 
             byte = ser.read()
-        ecg1_entry = struct.unpack('H', packet[2:4])
-        ecg1.write(str(ecg1_entry))
-        ecg2_entry = struct.unpack('H', packet[4:6])
-        ecg2.write(str(ecg2_entry))
-        resp_entry = struct.unpack('H', packet[6:8])
-        resp.write(str(resp_entry))
-        ppg_entry = struct.unpack('H', packet[8:10])
-        ppg.write(str(ppg_entry)) 
+        #ecg1_entry = struct.unpack('<H', packet[2:4])
+        ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=False)
+        ecg1.write(str(ecg1_entry) + '\n')
+        #ecg2_entry = struct.unpack('<H', packet[4:6])
+        ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=False)
+        ecg2.write(str(ecg2_entry) + '\n')
+        #resp_entry = struct.unpack('<H', packet[6:8])
+        resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=False)
+        resp.write(str(resp_entry) + '\n')
+        #ppg_entry = struct.unpack('<H', packet[8:10])
+        ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=False)
+        ppg.write(str(ppg_entry) + '\n') 
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
