@@ -27,7 +27,7 @@ import struct
 ser = serial.Serial() 
 ser.bytesize = 8      
 ser.baudrate = 115200  
-ser.port = '/dev/ttyS0'  # ttyS0 is now connected to serial1, which is the proper UART
+ser.port = '/dev/ttyAMA0'  # Please work
 # Can set ser.timeout = T to stop reading after T seconds, might be useful for testing 
 ser.open() 
 
