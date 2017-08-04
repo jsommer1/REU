@@ -69,5 +69,6 @@ ecg1.close()
 ecg2.close()  
 resp.close()  
 ppg.close()  
-ser.close()
+if ser.is_open: 
+    ser.close()
 
