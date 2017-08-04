@@ -18,6 +18,8 @@
 # Joe Sommer 2017 
 ######
 
+# Currently set up to test algorithm on 30,000 samples from sample #100 from the MIT-BIH database 
+
 import numpy as np
 from scipy import signal, io 
 import matplotlib.pyplot as plt
