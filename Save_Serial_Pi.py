@@ -57,13 +57,13 @@ while True:
         for byte in packet: 
             byte = ser.read()
         ecg1_entry = struct.unpack('H', packet[2:4])
-        ecg1.write(ecg1_entry)
+        ecg1.write(str(ecg1_entry))
         ecg2_entry = struct.unpack('H', packet[4:6])
-        ecg2.write(ecg2_entry)
+        ecg2.write(str(ecg2_entry))
         resp_entry = struct.unpack('H', packet[6:8])
-        resp.write(resp_entry)
+        resp.write(str(resp_entry))
         ppg_entry = struct.unpack('H', packet[8:10])
-        ppg.write(ppg_entry) 
+        ppg.write(str(ppg_entry)) 
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
