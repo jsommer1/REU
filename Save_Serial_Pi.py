@@ -4,16 +4,6 @@
 # In[ ]:
 
 
-# TO DO: 
-# - connect the Pi to wifi so that it can download this program
-# - get this code onto Github & get it on the Pi 
-# - check if I need to do the online training for CNI 
-# - test the code: connect to the machine, try to save like 30s of data, compare to the raw data
-
-# Check here: http://cni.stanford.edu/wiki/MR_Hardware#Scan_Triggers
-
-
-
 # This code is to be run from a Raspberry Pi 3. It'll hopefully read in serial data through the UART and save the raw 
 # data in 4 separate text files. 
 
