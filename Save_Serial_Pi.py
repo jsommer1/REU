@@ -6,7 +6,6 @@
 
 # This code is to be run from a Raspberry Pi 3. It'll hopefully read in serial data through the UART and save the raw 
 # data in 4 separate text files. 
-# Joe Sommer 2017 
 
 
 import serial 
@@ -18,8 +17,9 @@ import struct
 ser = serial.Serial() 
 ser.bytesize = 8      
 ser.baudrate = 115200  
-ser.port = '/dev/ttyAMA0'  # Please work
-ser.timeout = 3 # Times out after 3 seconds 
+ser.port = '/dev/ttyAMA0'  #Please work...  
+#ser.timeout = 3  # Probably delete this line later 
+TIMEOUT = 3 # Set a 3-second timeout, stops reading data after 3 seconds. Set manual user input later 
 ser.open() 
 
 
@@ -33,7 +33,6 @@ ppg = open('PPGDATA.txt', 'w+')
 # Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
 while True:                    
     ser.reset_input_buffer()   # Clears serial input
-    #ser.flushInput() # TEST 
     time.sleep(0.001)          # Waits 1ms before checking for silence 
     if (ser.in_waiting <= 0):  # Moves on w/ rest of program if silent period is reached
         break
@@ -42,8 +41,12 @@ while True:
 # Initializes empty bytearray to store 12 bytes per packet in 
 packet = bytearray(12)
         
+
+# Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
+start_time = time.process_time()
     
-# Reads serial data 1 packet at a time & stores data in the corresponding text files
+    
+# Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
     if (ser.in_waiting >= 12): 
         for i in range(0,12):
@@ -56,7 +59,9 @@ while True:
         resp.write(resp_entry)
         ppg_entry = struct.unpack('H', packet[8:10])
         ppg.write(ppg_entry) 
-        
+    current_time = time.process_time()
+    if current_time - start_time >= TIMEOUT: 
+        break    # Stops reading serial data if the timeout has passed 
         
 ## THIS PART IS PROBABLY OBSOLETE ##         
 # Reads serial data and stores it in the text file 
@@ -72,4 +77,4 @@ resp.close()
 ppg.close()  
 if ser.is_open: 
     ser.close()
-
+    
