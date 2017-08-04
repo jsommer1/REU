@@ -28,7 +28,7 @@ ser = serial.Serial()
 ser.bytesize = 8      
 ser.baudrate = 115200  
 ser.port = '/dev/ttyAMA0'  # Please work
-# Can set ser.timeout = T to stop reading after T seconds, might be useful for testing 
+ser.timeout = 3 # Times out after 3 seconds 
 ser.open() 
 
 
