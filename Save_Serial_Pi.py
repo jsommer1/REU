@@ -44,6 +44,8 @@ ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'a')
 # Compares checksum to sum of rest of data 
 checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'a')
 
+#
+packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'a')
 
 # Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
 while True:                    
@@ -60,7 +62,7 @@ packet = bytearray(12)
 # Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
 start_time = time.process_time()
     
-    
+
     
 # Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
@@ -82,12 +84,16 @@ while True:
         
         # Gets packet numbers 
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
+        # 
+        packnums.write(str(packnum_entry) + '\n')
         
         
         # This part records the pack number & compares the checksum value to the sum of the data
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
         data_sum = ecg1_entry + ecg2_entry + resp_entry + ppg_entry 
-        checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
+        #
+        checksum.write('checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
+        #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
         if checksum_entry != data_sum:
             checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
             break 
@@ -103,5 +109,7 @@ ecg2.close()
 resp.close()  
 ppg.close()  
 checksum.close()
+#
+packnums.close()
 if ser.is_open: 
     ser.close()
