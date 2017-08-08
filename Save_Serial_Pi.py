@@ -37,6 +37,8 @@ ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'a')
 resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'a')
 ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'a')
 
+# Compares checksum to sum of rest of data 
+checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'a')
 
 # Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
 while True:                    
@@ -57,8 +59,6 @@ start_time = time.process_time()
 # Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
     if (ser.in_waiting >= 12): 
-        #for i in range(0,12):
-         #   packet[i] = ser.read()
         for byte in packet: 
             byte = ser.read()
         #ecg1_entry = struct.unpack('<H', packet[2:4])
@@ -73,6 +73,15 @@ while True:
         #ppg_entry = struct.unpack('<H', packet[8:10])
         ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=False)
         ppg.write(str(ppg_entry) + '\n') 
+        
+        # This part compares & records the checksum value vs the sum of the data, and breaks if they doesn't match 
+        checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
+        data_sum = ecg1_entry + ecg2_entry + resp_entry + ppg_entry 
+        checksum.write('checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
+        if checksum_entry != data_sum:
+            checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
+            break 
+        
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
@@ -83,6 +92,6 @@ ecg1.close()
 ecg2.close()  
 resp.close()  
 ppg.close()  
+checksum.close()
 if ser.is_open: 
     ser.close()
-    
