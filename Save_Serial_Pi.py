@@ -76,8 +76,9 @@ while True:
         print (packet) 
         for i in range(12): 
             print ('current input: ')
-            print (ser.read())
-            packet = packet + ser.read()
+            CURRENTINPUT = ser.read()
+            print (CURRENTINPUT)
+            packet = packet + CURRENTINPUT 
             #packet.extend(ser.read()) 
             print ('packet ' + str(i))
             print (packet) 
