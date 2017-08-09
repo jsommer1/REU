@@ -64,7 +64,7 @@ while True:
     if (ser.in_waiting >= 12): 
         for byte in packet: 
             byte = ser.read()
-        print packet  
+        print (packet)  
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
         #ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=False)
