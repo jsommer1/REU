@@ -16,12 +16,13 @@ import datetime
 ser = serial.Serial() 
 ser.bytesize = 8      
 ser.baudrate = 115200  
-ser.port = '/dev/ttyAMA0'    
+ser.port = '/dev/ttyAMA0'  
+ser.stopbits = 1
 TIMEOUT = 3
 dummy = 1
 while dummy == 1:    # Stops reading data after TIMEOUT seconds. User inputs value for TIMEOUT
     try:
-        TIMEOUT = int(input("Enter runtime in seconds: "))   
+        TIMEOUT = float(input("Enter runtime in seconds: "))   
         dummy = 0
     except ValueError:
         print('Please enter a valid runtime.')
