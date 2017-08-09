@@ -10,6 +10,7 @@ import serial
 import time
 import struct
 import datetime
+import numpy as np
 
 
 # Initializes serial connection 
@@ -52,8 +53,9 @@ while True:
 
         
 # Initializes empty bytearray to store 12 bytes per packet in 
-packet = bytearray(12)
-        
+# packet = bytearray(12)
+  packet = np.zeros(12)
+    
 print ('INITIAL EMPTY PACKET')
 print (packet) 
 print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
