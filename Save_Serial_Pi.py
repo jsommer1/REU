@@ -75,14 +75,14 @@ while True:
         #print ('initial packet: ')
         #print (packet) 
         for i in range(12): 
-            #print ('current input: ')
+            print ('current input: ')
             CURRENTINPUT = ser.read()
-            #print (CURRENTINPUT)
+            print (CURRENTINPUT)
             packet = packet + CURRENTINPUT 
             #packet.extend(ser.read()) 
-            #print ('packet ' + str(i))
-            #print (packet) 
-            #print ('------') 
+            print ('packet ' + str(i))
+            print (packet) 
+            print ('------') 
             #packet.append(ser.read()
           
         
@@ -120,7 +120,7 @@ while True:
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
         data_sum = ecg1_entry + ecg2_entry + resp_entry + ppg_entry 
         #
-        checksum.write('checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
+        checksum.write('checksum: ' + str(checksum_entry) + '  data sum: ' + str(data_sum) + '\n')
         #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
         if checksum_entry != data_sum:
             checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
