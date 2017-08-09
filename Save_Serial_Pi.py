@@ -31,7 +31,7 @@ ser.open()
 # Creates 4 text files to save data from different leads: ECG1, ECG2, Resp, and PPG
 rightnow = datetime.datetime.now()
 
-ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'ab')  
+ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'wb')  
 ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'ab')
 resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'ab')
 ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'ab')
@@ -64,7 +64,7 @@ while True:
     if (ser.in_waiting >= 12): 
         for byte in packet: 
             byte = ser.read()
-            print (byte) 
+        print packet  
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
         #ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=False)
