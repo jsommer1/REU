@@ -72,59 +72,59 @@ while True:
         
         #packet = bytearray() 
         packet = b''
-        print ('initial packet: ')
-        print (packet) 
+        #print ('initial packet: ')
+        #print (packet) 
         for i in range(12): 
-            print ('current input: ')
+            #print ('current input: ')
             CURRENTINPUT = ser.read()
-            print (CURRENTINPUT)
+            #print (CURRENTINPUT)
             packet = packet + CURRENTINPUT 
             #packet.extend(ser.read()) 
-            print ('packet ' + str(i))
-            print (packet) 
-            print ('------') 
+            #print ('packet ' + str(i))
+            #print (packet) 
+            #print ('------') 
             #packet.append(ser.read()
           
         
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
-        #ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
-        #ecg1.write(str(ecg1_entry) + '\n')
+        ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
+        ecg1.write(str(ecg1_entry) + '\n')
         
-        ecg1.write(packet[2:4])
+        #ecg1.write(packet[2:4])
         
         #ecg2_entry = struct.unpack('<H', packet[4:6])
-        #ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=False)
-        #ecg2.write(str(ecg2_entry) + '\n')
-        ecg2.write(packet[4:6])
+        ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=False)
+        ecg2.write(str(ecg2_entry) + '\n')
+        #ecg2.write(packet[4:6])
 
         
         #resp_entry = struct.unpack('<H', packet[6:8])
-        #resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=False)
-        #resp.write(str(resp_entry) + '\n')
-        resp.write(packet[6:8])
+        resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=False)
+        resp.write(str(resp_entry) + '\n')
+        #resp.write(packet[6:8])
         
         #ppg_entry = struct.unpack('<H', packet[8:10])
-        #ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=False)
-        #ppg.write(str(ppg_entry) + '\n') 
-        ppg.write(packet[8:10])
+        ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=False)
+        ppg.write(str(ppg_entry) + '\n') 
+        #ppg.write(packet[8:10])
         
         
         # Gets packet numbers 
         #packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         # 
-        #packnums.write(str(packnum_entry) + '\n')
-        packnums.write(packet[0:2])
+        packnums.write(str(packnum_entry) + '\n')
+        #packnums.write(packet[0:2])
         
         # This part records the pack number & compares the checksum value to the sum of the data
-        #checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
-        #data_sum = ecg1_entry + ecg2_entry + resp_entry + ppg_entry 
+        checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
+        data_sum = ecg1_entry + ecg2_entry + resp_entry + ppg_entry 
         #
-        #checksum.write('checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
+        checksum.write('checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
         #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
-        #if checksum_entry != data_sum:
-        #    checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
-        #    break 
+        if checksum_entry != data_sum:
+            checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
+            break 
         
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
@@ -136,7 +136,7 @@ ecg1.close()
 ecg2.close()  
 resp.close()  
 ppg.close()  
-#checksum.close()
+checksum.close()
 #
 packnums.close()
 if ser.is_open: 
