@@ -111,7 +111,7 @@ while True:
         
         
         # Gets packet numbers 
-        #packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
+        packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         # 
         packnums.write(str(packnum_entry) + '\n')
         #packnums.write(packet[0:2])
