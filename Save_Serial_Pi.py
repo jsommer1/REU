@@ -46,11 +46,11 @@ packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
 
         
 # Initializes empty bytearray to store 12 bytes per packet in 
-packet = bytearray()
+#packet = bytearray()
 # packet = np.zeros(12)
-print ('INITIAL EMPTY PACKET')
-print (packet)
-print ('EVERYTHING ELSE SHOULD HAVE STUFF IN IT')
+#print ('INITIAL EMPTY PACKET')
+#print (packet)
+#print ('EVERYTHING ELSE SHOULD HAVE STUFF IN IT')
     
 
 # Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
@@ -74,10 +74,11 @@ while True:
         #print (packet) 
         #print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
   
-        
+        packet = bytearray() 
+    
         for i in range(12): 
             print (ser.read())
-            packet = packet.append(ser.read())           
+            packet.extend(ser.read())           
             
             #packet.append(ser.read()
         print (packet)  
