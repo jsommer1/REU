@@ -47,7 +47,8 @@ packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
         
 # Initializes empty bytearray to store 12 bytes per packet in 
 # packet = bytearray(12)
-packet = np.zeros(12)
+# packet = np.zeros(12)
+packet = np.asarray([])
     
 print ('INITIAL EMPTY PACKET')
 print (packet) 
@@ -70,7 +71,7 @@ while True:
     if (ser.in_waiting >= 12): 
         for i in range(12): 
             print (ser.read())
-            packet[i] = ser.read()
+            packet.append(ser.read())
         print (packet)  
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
