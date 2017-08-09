@@ -69,16 +69,15 @@ while True:
 while True:
     if (ser.in_waiting >= 12): 
         
-        #packet = []
-        #print ('INITIAL EMPTY PACKET')
-        #print (packet) 
-        #print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
-  
+        
         packet = bytearray() 
-    
+        print ('initial packet: ')
+        print (packet) 
         for i in range(12): 
             print (ser.read())
-            packet.extend(ser.read())           
+            packet.extend(ser.read()) 
+            print ('packet ' + str(i))
+            print (packet) 
             
             #packet.append(ser.read()
         print (packet)  
