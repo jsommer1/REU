@@ -73,19 +73,14 @@ while True:
         #print ('INITIAL EMPTY PACKET')
         #print (packet) 
         #print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
-
-       
-           
+  
         
         for i in range(12): 
             print (ser.read())
-            packet = packet.extend(ser.read())           
+            packet = packet.append(ser.read())           
             
             #packet.append(ser.read()
         print (packet)  
-        
-        
-        
         
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
