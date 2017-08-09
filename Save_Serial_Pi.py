@@ -32,16 +32,16 @@ ser.open()
 # Creates 4 text files to save data from different leads: ECG1, ECG2, Resp, and PPG
 rightnow = datetime.datetime.now()
 
-ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'a')  
-ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'a')
-resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'a')
-ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'a')
+ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'ab')  
+ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'ab')
+resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'ab')
+ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'ab')
 
 # Compares checksum to sum of rest of data 
 #checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'ab')
 
 #
-packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'a')
+packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
 
 # Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
 while True:                    
@@ -54,7 +54,9 @@ while True:
 # Initializes empty bytearray to store 12 bytes per packet in 
 packet = bytearray(12)
         
-
+print ('INITIAL EMPTY PACKET')
+print (packet) 
+    
 # Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
 start_time = time.process_time()
     
@@ -68,32 +70,32 @@ while True:
         print (packet)  
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
-        ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
-        ecg1.write(str(ecg1_entry) + '\n')
-        #ecg1.write(packet[2:4])
+        #ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
+        #ecg1.write(str(ecg1_entry) + '\n')
+        ecg1.write(packet[2:4])
         
         #ecg2_entry = struct.unpack('<H', packet[4:6])
-        ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=False)
-        ecg2.write(str(ecg2_entry) + '\n')
-        #ecg2.write(packet[4:6])
+        #ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=False)
+        #ecg2.write(str(ecg2_entry) + '\n')
+        ecg2.write(packet[4:6])
 
         
         #resp_entry = struct.unpack('<H', packet[6:8])
-        resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=False)
-        resp.write(str(resp_entry) + '\n')
-        #resp.write(packet[6:8])
+        #resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=False)
+        #resp.write(str(resp_entry) + '\n')
+        resp.write(packet[6:8])
         
         #ppg_entry = struct.unpack('<H', packet[8:10])
-        ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=False)
-        ppg.write(str(ppg_entry) + '\n') 
-        #ppg.write(packet[8:10])
+        #ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=False)
+        #ppg.write(str(ppg_entry) + '\n') 
+        ppg.write(packet[8:10])
         
         
         # Gets packet numbers 
-        packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
+        #packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         # 
-        packnums.write(str(packnum_entry) + '\n')
-        #packnums.write(packet[0:2])
+        #packnums.write(str(packnum_entry) + '\n')
+        packnums.write(packet[0:2])
         
         # This part records the pack number & compares the checksum value to the sum of the data
         #checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
