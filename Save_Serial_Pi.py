@@ -50,9 +50,6 @@ packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
 # packet = np.zeros(12)
 
     
-print ('INITIAL EMPTY PACKET')
-print (packet) 
-print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
 
 # Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
 start_time = time.process_time()
@@ -71,6 +68,10 @@ while True:
     if (ser.in_waiting >= 12): 
         
         packet = []
+        print ('INITIAL EMPTY PACKET')
+        print (packet) 
+        print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
+
         
         for i in range(12): 
             print (ser.read())
