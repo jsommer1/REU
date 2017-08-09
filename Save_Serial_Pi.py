@@ -75,14 +75,15 @@ while True:
         print ('initial packet: ')
         print (packet) 
         for i in range(12): 
+            print ('current input: ')
             print (ser.read())
             packet = packet + ser.read()
             #packet.extend(ser.read()) 
             print ('packet ' + str(i))
             print (packet) 
-            
+            print ('------') 
             #packet.append(ser.read()
-        print (packet)  
+          
         
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
