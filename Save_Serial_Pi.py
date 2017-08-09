@@ -76,7 +76,9 @@ while True:
         for i in range(12): 
             print (ser.read())
             packet.append(ser.read())
+            print ('object type: ' + type(ser.read()))
         print (packet)  
+        
         
         packet_bytes = bytearray(packet) 
         
