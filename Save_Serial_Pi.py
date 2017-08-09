@@ -89,23 +89,27 @@ while True:
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
         ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
+        ecg1_unsigned = int.from_bytes(packet[2:4], byteorder='little', signed=False)
         ecg1.write(str(ecg1_entry) + '\n')
         
         #ecg1.write(packet[2:4])
         
         #ecg2_entry = struct.unpack('<H', packet[4:6])
         ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
+        ecg2_unsigned = int.from_bytes(packet[4:6], byteorder='little', signed=False)
         ecg2.write(str(ecg2_entry) + '\n')
         #ecg2.write(packet[4:6])
 
         
         #resp_entry = struct.unpack('<H', packet[6:8])
         resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=True)
+        resp_unsigned = int.from_bytes(packet[6:8], byteorder='little', signed=False)
         resp.write(str(resp_entry) + '\n')
         #resp.write(packet[6:8])
         
         #ppg_entry = struct.unpack('<H', packet[8:10])
         ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=True)
+        ppg_unsigned = int.from_bytes(packet[8:10], byteorder='little', signed=False)
         ppg.write(str(ppg_entry) + '\n') 
         #ppg.write(packet[8:10])
         
@@ -118,7 +122,7 @@ while True:
         
         # This part records the pack number & compares the checksum value to the sum of the data
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
-        data_sum = ecg1_entry + ecg2_entry + resp_entry + ppg_entry 
+        data_sum = ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned 
         #
         checksum.write('checksum: ' + str(checksum_entry) + '  data sum: ' + str(data_sum) + '\n')
         #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
