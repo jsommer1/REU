@@ -126,9 +126,9 @@ while True:
         #
         checksum.write('checksum: ' + str(checksum_entry) + '  data sum: ' + str(data_sum) + '\n')
         #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
-        if checksum_entry != data_sum:
-            checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
-            break 
+        #if checksum_entry != data_sum:
+         #   checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
+          #  break 
         
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
