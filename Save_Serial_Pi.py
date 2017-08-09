@@ -44,13 +44,6 @@ ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'ab')
 #
 packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
 
-# Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
-while True:                    
-    ser.reset_input_buffer()   # Clears serial input
-    time.sleep(0.001)          # Waits 1ms before checking for silence 
-    if (ser.in_waiting <= 0):  # Moves on w/ rest of program if silent period is reached
-        break
-
         
 # Initializes empty bytearray to store 12 bytes per packet in 
 # packet = bytearray(12)
@@ -62,15 +55,22 @@ print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
 
 # Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
 start_time = time.process_time()
-    
+
+
+# Syncs w/ beginning of a packet by clearing serial input and waiting for silent period between packets
+while True:                    
+    ser.reset_input_buffer()   # Clears serial input
+    time.sleep(0.001)          # Waits 1ms before checking for silence 
+    if (ser.in_waiting <= 0):  # Moves on w/ rest of program if silent period is reached
+        break
 
     
 # Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
     if (ser.in_waiting >= 12): 
-        for byte in packet: 
+        for i in range(12): 
             print (ser.read())
-            byte = ser.read()
+            packet[i] = ser.read()
         print (packet)  
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
