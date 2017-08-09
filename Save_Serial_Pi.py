@@ -80,7 +80,7 @@ while True:
         for i in range(12): 
             print (ser.read())
             packet = packet.extend(ser.read())           
-            print (bytes(packet[i]))
+            
             #packet.append(ser.read()
         print (packet)  
         
