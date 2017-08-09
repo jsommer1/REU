@@ -54,7 +54,7 @@ while True:
         
 # Initializes empty bytearray to store 12 bytes per packet in 
 # packet = bytearray(12)
-  packet = np.zeros(12)
+packet = np.zeros(12)
     
 print ('INITIAL EMPTY PACKET')
 print (packet) 
