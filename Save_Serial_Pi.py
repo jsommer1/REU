@@ -46,7 +46,7 @@ packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
 
         
 # Initializes empty bytearray to store 12 bytes per packet in 
-packet = bytearray(12)
+packet = bytearray()
 # packet = np.zeros(12)
 print ('INITIAL EMPTY PACKET')
 print (packet)
@@ -75,15 +75,13 @@ while True:
         #print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
 
        
-        for byte in packet: 
-            print (ser.read()) 
-            byte = ser.read() 
            
         
-        #for i in range(12): 
-            #print (ser.read())
-            #packet.append(ser.read())
-            #print ('object type: ' + str(type(ser.read())))
+        for i in range(12): 
+            print (ser.read())
+            packet = packet.extend(ser.read())           
+            print (byte(packet[i]))
+            #packet.append(ser.read()
         print (packet)  
         
         
