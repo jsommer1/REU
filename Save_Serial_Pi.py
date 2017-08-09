@@ -94,18 +94,18 @@ while True:
         #ecg1.write(packet[2:4])
         
         #ecg2_entry = struct.unpack('<H', packet[4:6])
-        ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=False)
+        ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
         ecg2.write(str(ecg2_entry) + '\n')
         #ecg2.write(packet[4:6])
 
         
         #resp_entry = struct.unpack('<H', packet[6:8])
-        resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=False)
+        resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=True)
         resp.write(str(resp_entry) + '\n')
         #resp.write(packet[6:8])
         
         #ppg_entry = struct.unpack('<H', packet[8:10])
-        ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=False)
+        ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=True)
         ppg.write(str(ppg_entry) + '\n') 
         #ppg.write(packet[8:10])
         
