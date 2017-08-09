@@ -33,16 +33,16 @@ ser.open()
 # Creates 4 text files to save data from different leads: ECG1, ECG2, Resp, and PPG
 rightnow = datetime.datetime.now()
 
-ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'ab')  
-ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'ab')
-resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'ab')
-ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'ab')
+ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'a')  
+ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'a')
+resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'a')
+ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'a')
 
 # Compares checksum to sum of rest of data 
-#checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'ab')
+checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'a')
 
 #
-packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
+packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'a')
 
         
 # Initializes empty bytearray to store 12 bytes per packet in 
