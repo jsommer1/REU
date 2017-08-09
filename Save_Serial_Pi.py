@@ -56,7 +56,8 @@ packet = bytearray(12)
         
 print ('INITIAL EMPTY PACKET')
 print (packet) 
-    
+print ('EVERYTHING AFTER THIS SHOULD BE FILLED WITH DATA')
+
 # Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
 start_time = time.process_time()
     
@@ -66,6 +67,7 @@ start_time = time.process_time()
 while True:
     if (ser.in_waiting >= 12): 
         for byte in packet: 
+            print (ser.read())
             byte = ser.read()
         print (packet)  
         
