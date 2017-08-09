@@ -80,7 +80,7 @@ while True:
         print (packet)  
         
         
-        packet_bytes = bytearray(packet) 
+        
         
         
         #ecg1_entry = struct.unpack('<H', packet[2:4])
