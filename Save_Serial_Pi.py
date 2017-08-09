@@ -48,7 +48,7 @@ packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'ab')
 # Initializes empty bytearray to store 12 bytes per packet in 
 # packet = bytearray(12)
 # packet = np.zeros(12)
-packet = np.asarray([])
+
     
 print ('INITIAL EMPTY PACKET')
 print (packet) 
@@ -69,6 +69,9 @@ while True:
 # Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
     if (ser.in_waiting >= 12): 
+        
+        packet = []
+        
         for i in range(12): 
             print (ser.read())
             packet.append(ser.read())
