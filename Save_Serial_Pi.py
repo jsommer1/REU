@@ -99,7 +99,7 @@ while True:
         #data_sum = ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned 
         data_sum = ecg1_unsigned + ecg2_unsigned + ppg_unsigned + resp_unsigned
         checksum.write('---\n')
-        checksum.write('ecg1_unsigned: ' + srt(ecg1_unsigned) + ' ecg2_unsigned: ' + srt(ecg2_unsigned) + ' resp_unsigned: ' + str(resp_unsigned) + ' ppg_unsigned: ' + str(ppg_unsigned) + '\n')
+        checksum.write('ecg1_unsigned: ' + str(ecg1_unsigned) + ' ecg2_unsigned: ' + str(ecg2_unsigned) + ' resp_unsigned: ' + str(resp_unsigned) + ' ppg_unsigned: ' + str(ppg_unsigned) + '\n')
         checksum.write('checksum: ' + str(checksum_entry) + '  data sum: ' + str(data_sum) + '\n')
         #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
         if checksum_entry != data_sum:
