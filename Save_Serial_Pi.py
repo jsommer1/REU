@@ -90,7 +90,6 @@ while True:
         ppg_unsigned = int.from_bytes(packet[8:10], byteorder='little', signed=False)
         ppg.write(str(ppg_entry) + '\n') 
         
-        
         # Gets packet numbers 
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         packnums.write(str(packnum_entry) + '\n')
