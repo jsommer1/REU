@@ -95,7 +95,7 @@ while True:
         packnums.write(str(packnum_entry) + '\n')
         
         # This part records the pack number & compares the checksum value to the sum of the data
-        checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
+        checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=True)
         #data_sum = ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned 
         data_sum = ecg1_unsigned + ecg2_unsigned + ppg_unsigned + resp_unsigned
         checksum.write('---\n')
