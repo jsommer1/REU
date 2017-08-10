@@ -95,13 +95,15 @@ while True:
         packnums.write(str(packnum_entry) + '\n')
         
         # This part records the pack number & compares the checksum value to the sum of the data
-        checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=True)
+        checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
+        checksum_signed = int.from_bytes(packet[10:12], byteorder='little', signed=True)
+
         #data_sum = ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned 
         data_sum = ecg1_unsigned + ecg2_unsigned + ppg_unsigned + resp_unsigned
         checksum.write('---\n')
         checksum.write('ecg1_unsigned: ' + str(ecg1_unsigned) + ' ecg2_unsigned: ' + str(ecg2_unsigned) + ' resp_unsigned: ' + str(resp_unsigned) + ' ppg_unsigned: ' + str(ppg_unsigned) + '\n')
         checksum.write('ecg1_signed: ' + str(ecg1_entry) + ' ecg2_signed: ' + str(ecg2_entry) + ' resp_signed: ' + str(resp_entry) + ' ppg_unsigned: ' + str(ppg_unsigned) + '\n')
-        checksum.write('checksum: ' + str(checksum_entry) + '  data sum: ' + str(data_sum) + '\n')
+        checksum.write('checksum unsigned: ' + str(checksum_entry) + ' checksum signed: ' + str(checksum_signed) + '  data sum: ' + str(data_sum) + '\n')
         #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
         if checksum_entry != data_sum:
             checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
