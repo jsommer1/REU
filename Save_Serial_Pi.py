@@ -123,7 +123,7 @@ while True:
         # This part records the pack number & compares the checksum value to the sum of the data
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
         #data_sum = ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned 
-        data_sum = ecg1_entry + ecg2_entry + ppg_entry + resp_entry
+        data_sum = ecg1_unsigned + ecg2_unsigned + ppg_unsigned + resp_unsigned
         checksum.write('checksum: ' + str(checksum_entry) + '  data sum: ' + str(data_sum) + '\n')
         #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
         #if checksum_entry != data_sum:
