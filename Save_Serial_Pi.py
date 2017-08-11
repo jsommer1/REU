@@ -5,7 +5,6 @@
 # This code is to be run from a Raspberry Pi 3. It'll hopefully read in serial data through the UART and save the raw 
 # data in 4 separate text files. 
 
-
 import serial 
 import time
 import struct
@@ -30,18 +29,14 @@ while dummy == 1:    # Stops reading data after TIMEOUT seconds. User inputs val
 ser.open() 
 
 
-# Creates 4 text files to save data from different leads: ECG1, ECG2, Resp, and PPG
+# Creates 4 text files to save data from different leads (ECG1, ECG2, Resp, and PPG) and 2 more to save checksum values & packet numbers
 rightnow = datetime.datetime.now()
 
 ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'a')  
 ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'a')
 resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'a')
-ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'a')
-
-# Compares checksum to sum of rest of data 
+ppg = open('PPGDATA' + str(rightnow.isoformat()) + '.txt', 'a') 
 checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'a')
-
-#
 packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'a')
 
 
@@ -55,24 +50,17 @@ while True:
     time.sleep(0.001)          # Waits 1ms before checking for silence 
     if (ser.in_waiting <= 0):  # Moves on w/ rest of program if silent period is reached
         break
-
+    
     
 # Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
     if (ser.in_waiting >= 12): 
-        
-        
         packet = b''
         for i in range(12): 
-            print ('current input: ')
             CURRENTINPUT = ser.read()
-            print (CURRENTINPUT)
-            packet = packet + CURRENTINPUT 
-            print ('packet ' + str(i))
-            print (packet) 
-            print ('------') 
+            packet = packet + CURRENTINPUT         
         
-        
+        # Writes in data from each lead into the corresponding file 
         ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
         ecg1_unsigned = int.from_bytes(packet[2:4], byteorder='little', signed=False)
         ecg1.write(str(ecg1_entry) + '\n')
@@ -93,12 +81,10 @@ while True:
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         packnums.write(str(packnum_entry) + '\n')
        
-        
-        # This part records the pack number & compares the checksum value to the sum of the data
+        # This big chunk (lines 85 to 101) is to try and figure out how to compare the data to the checksum in order to check for corrupt data
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
         checksum_signed = int.from_bytes(packet[10:12], byteorder='little', signed=True)
 
-        #data_sum = ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned 
         data_sum2 = ecg1_entry + ecg2_entry + ppg_entry + resp_entry 
         data_sum = ecg1_unsigned + ecg2_unsigned + ppg_unsigned + resp_unsigned
         checksum.write('---\n')
@@ -110,9 +96,7 @@ while True:
         #if checksum_entry != data_sum:
         #    checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
         #    break 
-        
         checksum_test = bin(packnum_entry + ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned + checksum_entry)
-         
         checksum.write('If this is all 0s then we\'re good: ' + checksum_test + '\n')
         checksum.write(str(int(checksum_test,2)) + '\n')
         
@@ -127,7 +111,6 @@ ecg2.close()
 resp.close()  
 ppg.close()  
 checksum.close()
-#
 packnums.close()
 if ser.is_open: 
     ser.close()
