@@ -111,9 +111,9 @@ while True:
         #    checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
         #    break 
         
-        checksum_test = bin(packnum_entry + ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned)
-        checksum_test_binary = bin(checksum_entry) 
-        checksum.write('If these are equal then we\'re good: ' + checksum_test + ' & ' + checksum_test_binary + '\n')
+        checksum_test = bin(packnum_entry + ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned + checksum_entry)
+         
+        checksum.write('If this is all 0s then we\'re good: ' + checksum_test + '\n')
         
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
