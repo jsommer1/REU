@@ -43,7 +43,7 @@ checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'a')
 
 #
 packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'a')
-    
+
 
 # Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
 start_time = time.process_time()
@@ -92,6 +92,10 @@ while True:
         # Gets packet numbers 
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         packnums.write(str(packnum_entry) + '\n')
+        
+        packnum_test = int.from_bytes(packet[0:2], byteorder='little', signed=True)
+        packnums.write('signed pack num: ' + str(packnum_test) + '\n')
+        packnums.write('-------\n')
         
         # This part records the pack number & compares the checksum value to the sum of the data
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
