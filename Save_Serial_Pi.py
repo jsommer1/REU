@@ -114,7 +114,7 @@ while True:
         checksum_test = bin(packnum_entry + ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned + checksum_entry)
          
         checksum.write('If this is all 0s then we\'re good: ' + checksum_test + '\n')
-        checksum.write(int(checksum_test,2) + '\n')
+        checksum.write(str(int(checksum_test,2)) + '\n')
         
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
