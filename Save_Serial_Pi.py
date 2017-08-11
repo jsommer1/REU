@@ -2,15 +2,16 @@
 # coding: utf-8
 
 # In[ ]:
-# This code is to be run from a Raspberry Pi 3. It'll hopefully read in serial data through the UART and save the raw 
-# data in 4 separate text files. 
+# This code is to be run from a Raspberry Pi 3 with reconfigured UART. It reads in serial data in packets of 12 bytes (6 shorts) every 
+# 5ms and writes the data into 6 text files: 4 for each lead's waveform and 2 for package labels and checksum values. 
+# Currently, the checksum comparison to detect data corruption has not been completed yet, but as the packet labels increment correctly, 
+# this program is believed to work properly. 
+# Joe Sommer 2017 
 
 import serial 
 import time
 import struct
 import datetime
-import numpy as np
-
 
 # Initializes serial connection 
 ser = serial.Serial() 
