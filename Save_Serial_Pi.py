@@ -92,10 +92,7 @@ while True:
         # Gets packet numbers 
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         packnums.write(str(packnum_entry) + '\n')
-        
-        packnum_test = int.from_bytes(packet[0:2], byteorder='little', signed=True)
-        packnums.write('signed pack num: ' + str(packnum_test) + '\n')
-        packnums.write('-------\n')
+       
         
         # This part records the pack number & compares the checksum value to the sum of the data
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
@@ -113,6 +110,9 @@ while True:
         #if checksum_entry != data_sum:
         #    checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
         #    break 
+        
+        checksum_test = bin(packnum_entry + ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned + checksum_entry)
+        checksum.write('If this value is full of zeros then we\'re good: ' + checksum_test + '\n')
         
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
