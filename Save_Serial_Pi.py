@@ -111,7 +111,7 @@ while True:
         #    checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
         #    break 
         
-        checksum_test = bin(packnum_entry + ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned + checksum_entry)
+        checksum_test = bin(ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned + checksum_entry)
         checksum.write('If this value is full of zeros then we\'re good: ' + checksum_test + '\n')
         
     current_time = time.process_time()
