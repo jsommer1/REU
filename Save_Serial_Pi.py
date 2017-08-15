@@ -83,28 +83,32 @@ while True:
         packnums.write(str(packnum_entry) + '\n')
        
         # This big chunk (lines 85 to 101) is to try and figure out how to compare the data to the checksum in order to check for corrupt data
+        
+        # This is the value to compare the other stuff to 
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
-        checksum_signed = int.from_bytes(packet[10:12], byteorder='little', signed=True)
-
-        data_sum2 = ecg1_entry + ecg2_entry + ppg_entry + resp_entry 
-        data_sum = ecg1_unsigned + ecg2_unsigned + ppg_unsigned + resp_unsigned
+        
+        data_sum = unsignedSum(packnum_entry) + unsignedSum(ecg1_unsigned) + unsignedSum(ecg2_unsigned) + unsignedSum(resp_unsigned) + unsignedSum(ppg_unsigned) 
+        
         checksum.write('---\n')
-        checksum.write('ecg1_unsigned: ' + str(ecg1_unsigned) + ' ecg2_unsigned: ' + str(ecg2_unsigned) + ' resp_unsigned: ' + str(resp_unsigned) + ' ppg_unsigned: ' + str(ppg_unsigned) + '\n')
-        checksum.write('ecg1_signed: ' + str(ecg1_entry) + ' ecg2_signed: ' + str(ecg2_entry) + ' resp_signed: ' + str(resp_entry) + ' ppg_signed: ' + str(ppg_entry) + '\n')
-        checksum.write('checksum unsigned: ' + str(checksum_entry) + ' checksum signed: ' + str(checksum_signed) + '  data sum: ' + str(data_sum) + '\n')
-        checksum.write('data sum signed: ' + str(data_sum2) + '\n') 
-        #checksum.write('pack number: ' + str(packnum_entry) + ' checksum: ' + str(checksum_entry) + ', data sum: ' + str(data_sum) + '\n')
-        #if checksum_entry != data_sum:
-        #    checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
-        #    break 
-        checksum_test = bin(packnum_entry + ecg1_unsigned + ecg2_unsigned + resp_unsigned + ppg_unsigned + checksum_entry)
-        checksum.write('If this is all 0s then we\'re good: ' + checksum_test + '\n')
-        checksum.write(str(int(checksum_test,2)) + '\n')
+        checksum.write('Checksum: ' + str(checksum_entry) + ' Data sum: ' + str(data_sum) + '\n')
+        checksum.write('Comparison: ' + str(checksum_entry - data_sum) + '\n')
+        
+        if checksum_entry != data_sum:
+            checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
+            break 
         
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
 
+        
+# This function converts a 16-bit unsigned int into two 8-bit unsigned ints and returns their sum
+def unsignedSum(unsigned_sixteen): 
+    mask1 = int('0b0000000011111111',2)
+    mask2 = int('0b1111111100000000',2)
+    signed_eight_1 = unsigned_sixteen & mask1 
+    signed_eight_2 = (unsigned_sixteen & mask2) >> 8
+    return signed_eight_1 + signed_eight_2
 
 # Closes everything     
 ecg1.close()  
