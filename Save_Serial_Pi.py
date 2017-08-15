@@ -52,7 +52,16 @@ while True:
     if (ser.in_waiting <= 0):  # Moves on w/ rest of program if silent period is reached
         break
     
-    
+        
+# This function converts a 16-bit unsigned int into two 8-bit unsigned ints and returns their sum
+def unsignedSum(unsigned_sixteen): 
+    mask1 = int('0b0000000011111111',2)
+    mask2 = int('0b1111111100000000',2)
+    signed_eight_1 = unsigned_sixteen & mask1 
+    signed_eight_2 = (unsigned_sixteen & mask2) >> 8
+    return signed_eight_1 + signed_eight_2   
+
+
 # Reads serial data 1 packet at a time & stores data in the corresponding text files, stops after timeout has passed
 while True:
     if (ser.in_waiting >= 12): 
@@ -101,14 +110,7 @@ while True:
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
 
-        
-# This function converts a 16-bit unsigned int into two 8-bit unsigned ints and returns their sum
-def unsignedSum(unsigned_sixteen): 
-    mask1 = int('0b0000000011111111',2)
-    mask2 = int('0b1111111100000000',2)
-    signed_eight_1 = unsigned_sixteen & mask1 
-    signed_eight_2 = (unsigned_sixteen & mask2) >> 8
-    return signed_eight_1 + signed_eight_2
+
 
 # Closes everything     
 ecg1.close()  
