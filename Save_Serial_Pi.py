@@ -21,7 +21,7 @@ ser.port = '/dev/ttyAMA0'
 ser.stopbits = 1
 TIMEOUT = 3
 dummy = 1
-while dummy == 1:    # Stops reading data after TIMEOUT seconds. User inputs value for TIMEOUT
+while dummy == 1:    # Stops reading data after TIMEOUT seconds. Takes user input value for TIMEOUT
     try:
         TIMEOUT = float(input("Enter runtime in seconds: "))   
         dummy = 0
@@ -91,24 +91,23 @@ while True:
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         packnums.write(str(packnum_entry) + '\n')
        
-        # This big chunk (lines 85 to 101) is to try and figure out how to compare the data to the checksum in order to check for corrupt data
-        
-        # This is the value to compare the other stuff to 
+    
+        # Calculates sum of unsigned byte values of data & compares sum to checksum value in order to check for corrupt data. 
+        # Displays an error message and ends program if values don't match.  
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
-        
         data_sum = unsignedSum(packnum_entry) + unsignedSum(ecg1_unsigned) + unsignedSum(ecg2_unsigned) + unsignedSum(resp_unsigned) + unsignedSum(ppg_unsigned) 
-        
         checksum.write('---\n')
         checksum.write('Checksum: ' + str(checksum_entry) + ' Data sum: ' + str(data_sum) + '\n')
         checksum.write('Comparison: ' + str(checksum_entry - data_sum) + '\n')
         
         if checksum_entry != data_sum:
-            checksum.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
+            checksum.write('DATA DOESN\'T MATCH CHECKSUM, DATA IS CORRUPT \n')
             break 
         
+    # Stops reading serial data if the timeout has passed 
     current_time = time.process_time()
     if current_time - start_time >= TIMEOUT: 
-        break    # Stops reading serial data if the timeout has passed 
+        break   
 
 
 
