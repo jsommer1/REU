@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import serial
 import struct
 import time
+import datetime
 
 # Sets up the serial port
 ser = serial.Serial() 
