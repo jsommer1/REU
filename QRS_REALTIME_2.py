@@ -357,6 +357,6 @@ testloc = ecg1_algorithm.qrsLocs
 time = np.arange(len(ecg1)) / 200
 QRS_time = time[np.ix_(testloc.astype(int))]
 QRS_locations = ecg1[np.ix_(testloc.astype(int))]
-plt.plot(time, testwave_short, 'b-', QRS_time, QRS_locations, 'ro')
+plt.plot(time, testloc, 'b-', QRS_time, QRS_locations, 'ro')
 plt.show()
 
