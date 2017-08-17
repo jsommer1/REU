@@ -354,7 +354,7 @@ PPG_QRS.close()
 
 ## TEST CODE: this part is to graph the results at the end and see if everything recorded properly 
 testloc = ecg1_algorithm.qrsLocs
-time = np.arange(len(ecg1)) / testFs
+time = np.arange(len(ecg1)) / 200
 QRS_time = time[np.ix_(testloc.astype(int))]
 QRS_locations = ecg1[np.ix_(testloc.astype(int))]
 plt.plot(time, testwave_short, 'b-', QRS_time, QRS_locations, 'ro')
