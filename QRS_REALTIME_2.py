@@ -112,7 +112,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         
         if checksum_entry != data_sum:
             CHECKSUMS.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
-            break 
+            #break 
     return 
 
 
