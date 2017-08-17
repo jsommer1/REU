@@ -278,7 +278,7 @@ class Algorithm:
         else: 
             self.thEL[self.kk] = np.copy(self.thEL[self.kk-1]) * self.decayF
         if self.thEL[self.kk] < self.r_nr * self.thN[self.kk-1]:
-            self.thEL[self.kk] = self.r_nr * np.copy(self.thNself.[kk-1])
+            self.thEL[self.kk] = self.r_nr * np.copy(self.thN[self.kk-1])
         
         self.kk = self.kk + 1
          
