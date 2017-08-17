@@ -11,6 +11,9 @@
 # but other than that, the class should be the only thing that needs to be changed in order to swap algorithms. 
 # Joe Sommer 2017 
 
+import matplotlib
+matplotlib.use('Agg')
+
 import numpy as np
 from scipy import signal, io 
 import matplotlib.pyplot as plt
