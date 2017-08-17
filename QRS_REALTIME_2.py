@@ -337,7 +337,7 @@ while True:
 
 
 # Closes everything 
-if ser.is_open():
+if ser.is_open:
     ser.close()
 CHECKSUMS.close()
 PACK_LABELS.close()
