@@ -175,7 +175,7 @@ class Algorithm:
     thN = np.asarray([])
     mem_allocation = 0     # Dummy counter to initialize these arrays
     
-    kk = LargeWin
+    kk = winsizeEV
     
     
     def __init__(self, lead): 
