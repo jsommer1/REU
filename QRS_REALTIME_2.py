@@ -166,7 +166,7 @@ class Algorithm:
     QRScount = 0
     
     cutoffs = np.array([(5/(Fs/2)),(25/(Fs/2))])
-    b = signal.firwin(64,cutoffs,pass_zero=False)
+    
     
     maxVArray = np.zeros((ArrayL,1))
     maxDifBuf = np.zeros((ArrayL,1))
@@ -194,8 +194,8 @@ class Algorithm:
     # It also saves the QRS points in a text file. 
     def iterate(self, lead, file):
         # (A) preprocessing
-         
-        fSig = signal.filtfilt(self.b, 1, lead, axis=0)   # Signal after bandpass filter
+        b = signal.firwin(64,cutoffs,pass_zero=False)
+        fSig = signal.filtfilt(b, 1, lead, axis=0)   # Signal after bandpass filter
         sSig = np.sqrt(fSig**2)               # Signal after squaring
         dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
         sigLen = len(sSig)
