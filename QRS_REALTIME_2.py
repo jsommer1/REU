@@ -197,12 +197,13 @@ class Algorithm:
         sigLen = len(sSig)
             
         #Initializes the arrays, then expands them each iteration after that
-        if mem_allocation == 0: 
+        if self.mem_allocation == 0: 
             self.ELQRS = np.zeros((sigLen,1))
             self.EVQRS = np.zeros((sigLen,1))
             self.thEL = np.ones((sigLen,1)) * self.thEL0    
             self.thEV = np.zeros((sigLen-1,1))        
             self.thN = np.zeros((sigLen,1))
+            self.mem_allocation = 1
         else:
             self.ELQRS = np.append(self.ELQRS, [0])
             self.EVQRS = np.append(self.EVQRS, [0])
