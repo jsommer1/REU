@@ -66,7 +66,8 @@ def unsignedSum(unsigned_sixteen):
 # if it detects corruption. 
 def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG_RAW, PACK_LABELS, CHECKSUMS):
     packet = b''
-    if (ser.in_waiting >= 12):
+    #if (ser.in_waiting >= 12):
+    if 1 == 1: 
         for i in range(12): 
             CURRENTINPUT = ser.read()
             packet = packet + CURRENTINPUT 
@@ -322,22 +323,24 @@ while True:
 
         
 while True: 
+    if (ser.in_waiting >= 12):
+    
     # Reads in & saves one packet of serial data
-    readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG_RAW, PACK_LABELS, CHECKSUMS)
+        readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG_RAW, PACK_LABELS, CHECKSUMS)
 
     # Runs one iteration of the algorithm for each of the 4 leads. 
     # In order for this particular algorithm to start, the data must be at least a certain length, so the if statement
     # is added in order to meet this minimum length. This part may require modification in order to switch to another 
     # algorithm later on, but other than this small detail and the algorithm class itself, no other modification should
     # be required. 
-    data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
-    print(data_length)
-    if data_length >= ecg1_algorithm.winsizeEV - 1:
-        print('Check 1')
-        ecg1_algorithm.iterate(ecg1, ECG1_QRS)
-        ecg2_algorithm.iterate(ecg2, ECG2_QRS)
-        resp_algorithm.iterate(resp, RESP_QRS)
-        ppg_algorithm.iterate(ppg, PPG_QRS)
+        data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
+        print(data_length)
+        if data_length >= ecg1_algorithm.winsizeEV - 1:
+            print('Check 1')
+            ecg1_algorithm.iterate(ecg1, ECG1_QRS)
+            ecg2_algorithm.iterate(ecg2, ECG2_QRS)
+            resp_algorithm.iterate(resp, RESP_QRS)
+            ppg_algorithm.iterate(ppg, PPG_QRS)
     
     ## TEST CODE: cuts out the program in order to plot stuff
     current_time = time.process_time()
