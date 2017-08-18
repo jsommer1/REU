@@ -79,6 +79,9 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
             ecg1 = np.append(ecg1, [ecg1_entry])
         else:
             ecg1 = np.concatenate((ecg1, [ecg1_entry]))
+            
+        print('----')
+        print(ecg1)
                 
         ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
         ecg2_unsigned = int.from_bytes(packet[4:6], byteorder='little', signed=False)
