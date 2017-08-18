@@ -194,7 +194,7 @@ class Algorithm:
     # It also saves the QRS points in a text file. 
     def iterate(self, lead, file):
         # (A) preprocessing
-        b = signal.firwin(64,cutoffs,pass_zero=False)
+        b = signal.firwin(64,self.cutoffs,pass_zero=False)
         fSig = signal.filtfilt(b, 1, lead, axis=0)   # Signal after bandpass filter
         sSig = np.sqrt(fSig**2)               # Signal after squaring
         dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
