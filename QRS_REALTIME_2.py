@@ -162,6 +162,7 @@ class Algorithm:
     QRScount = 0
     
     cutoffs = np.array([(5/(Fs/2)),(25/(Fs/2))])
+    b = signal.firwin(64,cutoffs,pass_zero=False)
     
     maxVArray = np.zeros((ArrayL,1))
     maxDifBuf = np.zeros((ArrayL,1))
@@ -189,8 +190,8 @@ class Algorithm:
     # It also saves the QRS points in a text file. 
     def iterate(self, lead, file):
         # (A) preprocessing
-        b = signal.firwin(64,self.cutoffs,pass_zero=False) 
-        fSig = signal.filtfilt(b, 1, lead, axis=0)   # Signal after bandpass filter
+         
+        fSig = signal.filtfilt(self.b, 1, lead, axis=0)   # Signal after bandpass filter
         sSig = np.sqrt(fSig**2)               # Signal after squaring
         dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
         sigLen = len(sSig)
@@ -328,6 +329,7 @@ while True:
     # be required. 
     data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
     if data_length >= ecg1_algorithm.winsizeEV - 1:
+        print('Check 1')
         ecg1_algorithm.iterate(ecg1, ECG1_QRS)
         ecg2_algorithm.iterate(ecg2, ECG2_QRS)
         resp_algorithm.iterate(resp, RESP_QRS)
