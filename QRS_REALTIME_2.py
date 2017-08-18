@@ -192,10 +192,10 @@ class Algorithm:
         
     # This function runs 1 iteration of the algorithm & is to be called after reading in a single data point.
     # It also saves the QRS points in a text file. 
-    def iterate(self, lead, file):
+    def iterate(self, data, file):
         # (A) preprocessing
         b = signal.firwin(64,self.cutoffs,pass_zero=False)
-        fSig = signal.filtfilt(b, 1, lead, axis=0)   # Signal after bandpass filter
+        fSig = signal.filtfilt(b, 1, data, axis=0)   # Signal after bandpass filter
         sSig = np.sqrt(fSig**2)               # Signal after squaring
         dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
         sigLen = len(sSig)
@@ -259,7 +259,7 @@ class Algorithm:
                 else:
                     BufStartP2 = maxP_Buf - self.winsizeEL
                 if maxP_Buf + 2 * self.diffWinsize > sigLen:
-                    BufEndP2 = lead.size
+                    BufEndP2 = data.size
                 else:
                     BufEndP2 = maxP_Buf + 2*self.diffWinsize*2
                 DiffSumCheck1 = np.amax(np.copy(self.EVQRS[(BufStartP2-1):(maxP_Buf+self.diffWinsize)]),axis=0)  
