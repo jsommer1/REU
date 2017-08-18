@@ -120,7 +120,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         if checksum_entry != data_sum:
             CHECKSUMS.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
             #break 
-    return 
+    return ecg1, ecg2, resp, ppg
 
 
 
@@ -326,7 +326,7 @@ while True:
     if (ser.in_waiting >= 12):
     
     # Reads in & saves one packet of serial data
-        readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG_RAW, PACK_LABELS, CHECKSUMS)
+        ecg1, ecg2, resp, ppg = readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG_RAW, PACK_LABELS, CHECKSUMS)
 
     # Runs one iteration of the algorithm for each of the 4 leads. 
     # In order for this particular algorithm to start, the data must be at least a certain length, so the if statement
