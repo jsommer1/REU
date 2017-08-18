@@ -3,7 +3,6 @@
 
 # In[ ]:
 
-
 # This code is a modified version of QRS_Detection.py that performs QRS detection in real-time on incoming serial data.
 # It is based around a custom class called "Algorithm" that implements the particular detection algorithm, so if 
 # someboy would like to change algorithms, modification to this class should be almost all that is required. There is 
@@ -188,10 +187,10 @@ class Algorithm:
         
     # This function runs 1 iteration of the algorithm & is to be called after reading in a single data point.
     # It also saves the QRS points in a text file. 
-    def iterate(self, file):
+    def iterate(self, lead, file):
         # (A) preprocessing
         b = signal.firwin(64,self.cutoffs,pass_zero=False) 
-        fSig = signal.filtfilt(b, 1, self.lead, axis=0)   # Signal after bandpass filter
+        fSig = signal.filtfilt(b, 1, lead, axis=0)   # Signal after bandpass filter
         sSig = np.sqrt(fSig**2)               # Signal after squaring
         dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
         sigLen = len(sSig)
@@ -255,7 +254,7 @@ class Algorithm:
                 else:
                     BufStartP2 = maxP_Buf - self.winsizeEL
                 if maxP_Buf + 2 * self.diffWinsize > sigLen:
-                    BufEndP2 = self.lead.size
+                    BufEndP2 = lead.size
                 else:
                     BufEndP2 = maxP_Buf + 2*self.diffWinsize*2
                 DiffSumCheck1 = np.amax(np.copy(self.EVQRS[(BufStartP2-1):(maxP_Buf+self.diffWinsize)]),axis=0)  
@@ -329,10 +328,10 @@ while True:
     # be required. 
     data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
     if data_length >= ecg1_algorithm.winsizeEV - 1:
-        ecg1_algorithm.iterate(ECG1_QRS)
-        ecg2_algorithm.iterate(ECG2_QRS)
-        resp_algorithm.iterate(RESP_QRS)
-        ppg_algorithm.iterate(PPG_QRS)
+        ecg1_algorithm.iterate(ecg1, ECG1_QRS)
+        ecg2_algorithm.iterate(ecg2, ECG2_QRS)
+        resp_algorithm.iterate(resp, RESP_QRS)
+        ppg_algorithm.iterate(ppg, PPG_QRS)
     
     ## TEST CODE: cuts out the program in order to plot stuff
     current_time = time.process_time()
@@ -363,4 +362,3 @@ QRS_time = time[np.ix_(testloc.astype(int))]
 QRS_locations = ecg1[np.ix_(testloc.astype(int))]
 plt.plot(time, testloc, 'b-', QRS_time, QRS_locations, 'ro')
 plt.show()
-
