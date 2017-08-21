@@ -75,8 +75,9 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         # Writes in raw data from each lead into the corresponding file & array
         ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
         ecg1_unsigned = int.from_bytes(packet[2:4], byteorder='little', signed=False)
+        #ecg1_entry = ecg1_entry / 1000  # Scales values down
         ECG1_RAW.write(str(ecg1_entry) + '\n')
-        ecg1_entry = ecg1_entry / 1000  # Scales values down 
+         
         if ecg1.size == 0:
             ecg1 = np.append(ecg1, [ecg1_entry])
         else:
@@ -87,7 +88,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
                 
         ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
         ecg2_unsigned = int.from_bytes(packet[4:6], byteorder='little', signed=False)
-        ecg2_entry = ecg2_entry / 1000  # Scales values down 
+        #ecg2_entry = ecg2_entry / 1000  # Scales values down 
         ECG2_RAW.write(str(ecg2_entry) + '\n')
         if ecg2.size == 0:
             ecg2 = np.append(ecg2, [ecg2_entry])
@@ -96,7 +97,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         
         resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=True)
         resp_unsigned = int.from_bytes(packet[6:8], byteorder='little', signed=False)
-        resp_entry = resp_entry / 1000  # Scales values down 
+        #resp_entry = resp_entry / 1000  # Scales values down 
         RESP_RAW.write(str(resp_entry) + '\n')
         if resp.size == 0:
             resp = np.append(resp, [resp_entry])
@@ -105,7 +106,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         
         ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=True)
         ppg_unsigned = int.from_bytes(packet[8:10], byteorder='little', signed=False)
-        ppg_entry = ppg_entry / 1000  # Scales values down 
+        #ppg_entry = ppg_entry / 1000  # Scales values down 
         PPG_RAW.write(str(ppg_entry) + '\n') 
         if ppg.size == 0:
             ppg = np.append(ppg, [ppg_entry])
