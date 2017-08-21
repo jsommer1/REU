@@ -357,7 +357,7 @@ while True:
     # be required. 
         data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
         
-        print(data_length)
+        #print(data_length)
        
         
         if data_length > 192:  # technicality for filtering purposes 
