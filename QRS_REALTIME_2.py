@@ -339,7 +339,7 @@ while True:
     # be required. 
         data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
         print(data_length)
-        if data_length >= 192:  # technicality for filtering purposes 
+        if data_length > 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
             print('CHECK 1')
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
