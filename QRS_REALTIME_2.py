@@ -236,9 +236,18 @@ class Algorithm:
             self.maxV = np.copy(self.ELQRS[self.kk-1])
             maxP = self.kk - 1 
             self.isStart = 1
+            
+            print(self.ELQRS[self.kk-1])
+            print(self.maxV)
+            
         if self.ELQRS[self.kk-1] < self.thN[self.kk-1]:
             self.thN[self.kk-1] = np.copy(self.ELQRS[self.kk-1]) 
         if self.isStart == 1: 
+            
+            print(self.ELQRS[self.kk-1])
+            print(self.maxV)
+            print('----')
+            
             if self.ELQRS[self.kk-1] >= self.maxV:
                 self.thEL[self.kk-1] = np.copy(self.ELQRS[self.kk-1])
                 self.maxV = np.copy(self.ELQRS[self.kk-1])  
