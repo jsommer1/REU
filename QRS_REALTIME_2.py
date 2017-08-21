@@ -341,6 +341,8 @@ while True:
         break
 
         
+iterationcounter = 1
+
 while True: 
     if (ser.in_waiting >= 12):
     
@@ -355,12 +357,12 @@ while True:
         data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
         
         print(data_length)
-        counter = 1
+       
         
         if data_length > 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
             print('Iteration number ' + str(counter))
-            counter = counter + 1
+            iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
             ecg2_algorithm.iterate(ecg2, ECG2_QRS)
             resp_algorithm.iterate(resp, RESP_QRS)
