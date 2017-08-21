@@ -246,7 +246,7 @@ class Algorithm:
         if self.ELQRS[self.kk-1] < self.thN[self.kk-1]:
             self.thN[self.kk-1] = np.copy(self.ELQRS[self.kk-1]) 
         print(self.ELQRS[self.kk-1])
-            print(self.maxV)
+        print(self.maxV)
         
         if self.isStart == 1: 
             
