@@ -295,12 +295,13 @@ class Algorithm:
                 DiffSumCheck2 = np.amin(np.copy(self.EVQRS[(self.maxP_Buf+self.diffWinsize-1):self.BufEndP2]),axis=0)  
                 if self.qrsLocs.size == 0 or (DiffSumCheck1-DiffSumCheck2>self.thEVlimit and DiffSumCheck1*DiffSumCheck2<0 and DiffSumCheck1>self.thEVub and DiffSumCheck2<self.thEVlb and DiffSumCheck1<self.thEVub2 and DiffSumCheck2>self.thEVlb2):
                     self.QRScount = self.QRScount + 1
-                    if self.qrsLocs.size == 0: 
+                    if 1 == 1:
+                    #if self.qrsLocs.size == 0: 
                         self.qrsLocs = np.append(self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2]),axis=0)
-                    else:
-                        print(self.qrsLocs.size)
-                        print(np.copy([self.maxP_Buf-self.winsizeEL+2]).size)
-                        self.qrsLocs = np.concatenate((self.qrsLocs,[np.copy([self.maxP_Buf-self.winsizeEL+2])]))
+                    #else:
+                    #    print(self.qrsLocs.size)
+                    #    print(np.copy([self.maxP_Buf-self.winsizeEL+2]).size)
+                    #    self.qrsLocs = np.concatenate((self.qrsLocs,[np.copy([self.maxP_Buf-self.winsizeEL+2])]))
                     file.write(str(np.copy([self.maxP_Buf-self.winsizeEL+2])) + '\n')
                     
             ### Step 3: Weight Adjustment ### 
