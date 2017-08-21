@@ -188,6 +188,14 @@ class Algorithm:
     
     kk = winsizeEV
     
+    Timer = -1 
+    TimerOfPeak = -1
+    
+    maxP = -1
+    maxP_Buf = -1
+    
+    BufStartP2 = -1
+    BufEndP2 = -1
     
     def __init__(self, lead): 
         self.lead = lead   # Labels the algorithm w/ the corresponding lead
@@ -234,7 +242,7 @@ class Algorithm:
         if self.isStart == 0 and self.ELQRS[self.kk-1] >= self.thEL[self.kk-1]:
             self.thEL[self.kk-1] = np.copy(self.ELQRS[self.kk-1])
             self.maxV = np.copy(self.ELQRS[self.kk-1])
-            maxP = self.kk - 1 
+            self.maxP = self.kk - 1 
             self.isStart = 1
             
             #print(self.ELQRS[self.kk-1])
@@ -257,45 +265,45 @@ class Algorithm:
             if self.ELQRS[self.kk-1] >= self.maxV:
                 self.thEL[self.kk-1] = np.copy(self.ELQRS[self.kk-1])
                 self.maxV = np.copy(self.ELQRS[self.kk-1])  
-                maxP = self.kk - 1 
-                Timer = self.refractoryP
+                self.maxP = self.kk - 1 
+                self.Timer = self.refractoryP
             else: 
-                Timer = Timer - 1
+                self.Timer = self.Timer - 1
                 self.thEL[self.kk-1] = self.maxV
-                if Timer == 0:
+                if self.Timer == 0:
                     self.isStart = 0
                     self.checker2 = 1
-                    TimerOfPeak = self.winsizeEV-(self.refractoryP-self.winsizeEL)
-                    maxP_Buf = maxP
+                    self.TimerOfPeak = self.winsizeEV-(self.refractoryP-self.winsizeEL)
+                    self.maxP_Buf = self.maxP
                     self.maxV_Buf = self.maxV
-            print(Timer)
+            print(self.Timer)
         ### Step 2: Energy Variation Detection ###
         if self.checker2 == 1:
-            TimerOfPeak = TimerOfPeak-1
-            if TimerOfPeak == 0:
+            self.TimerOfPeak = self.TimerOfPeak-1
+            if self.TimerOfPeak == 0:
                 self.checker2 = 0
-                if maxP_Buf-self.winsizeEL < 1: 
-                    BufStartP2 = 1
+                if self.maxP_Buf-self.winsizeEL < 1: 
+                    self.BufStartP2 = 1
                 else:
-                    BufStartP2 = maxP_Buf - self.winsizeEL
-                if maxP_Buf + 2 * self.diffWinsize > sigLen:
-                    BufEndP2 = data.size
+                    self.BufStartP2 = self.maxP_Buf - self.winsizeEL
+                if self.maxP_Buf + 2 * self.diffWinsize > sigLen:
+                    self.BufEndP2 = data.size
                 else:
-                    BufEndP2 = maxP_Buf + 2*self.diffWinsize*2
-                DiffSumCheck1 = np.amax(np.copy(self.EVQRS[(BufStartP2-1):(maxP_Buf+self.diffWinsize)]),axis=0)  
-                DiffSumCheck2 = np.amin(np.copy(self.EVQRS[(maxP_Buf+self.diffWinsize-1):BufEndP2]),axis=0)  
+                    self.BufEndP2 = self.maxP_Buf + 2*self.diffWinsize*2
+                DiffSumCheck1 = np.amax(np.copy(self.EVQRS[(self.BufStartP2-1):(self.maxP_Buf+self.diffWinsize)]),axis=0)  
+                DiffSumCheck2 = np.amin(np.copy(self.EVQRS[(self.maxP_Buf+self.diffWinsize-1):self.BufEndP2]),axis=0)  
                 if self.qrsLocs.size == 0 or (DiffSumCheck1-DiffSumCheck2>self.thEVlimit and DiffSumCheck1*DiffSumCheck2<0 and DiffSumCheck1>self.thEVub and DiffSumCheck2<self.thEVlb and DiffSumCheck1<self.thEVub2 and DiffSumCheck2>self.thEVlb2):
                     self.QRScount = self.QRScount + 1
                     if self.qrsLocs.size == 0: 
-                        self.qrsLocs = np.append(self.qrsLocs, np.copy([maxP_Buf-self.winsizeEL+2]),axis=0)
+                        self.qrsLocs = np.append(self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2]),axis=0)
                     else:
-                        self.qrsLocs = np.concatenate((self.qrsLocs,[np.copy([maxP_Buf-self.winsizeEL+2])]))
-                    file.write(str(np.copy([maxP_Buf-self.winsizeEL+2])) + '\n')
+                        self.qrsLocs = np.concatenate((self.qrsLocs,[np.copy([self.maxP_Buf-self.winsizeEL+2])]))
+                    file.write(str(np.copy([self.maxP_Buf-self.winsizeEL+2])) + '\n')
                     
             ### Step 3: Weight Adjustment ### 
                     self.maxVArray[(self.QRScount % self.ArrayL)] = self.maxV_Buf
-                    self.maxDifBuf[(self.QRScount % self.ArrayL)] = np.amax(np.copy(self.EVQRS[(BufStartP2-1):BufEndP2]),axis=0) 
-                    self.minDifBuf[(self.QRScount % self.ArrayL)] = np.amin(np.copy(self.EVQRS[(BufStartP2-1):BufEndP2]),axis=0) 
+                    self.maxDifBuf[(self.QRScount % self.ArrayL)] = np.amax(np.copy(self.EVQRS[(self.BufStartP2-1):self.BufEndP2]),axis=0) 
+                    self.minDifBuf[(self.QRScount % self.ArrayL)] = np.amin(np.copy(self.EVQRS[(self.BufStartP2-1):self.BufEndP2]),axis=0) 
                     if self.stabLevel > np.mean(self.maxVArray,axis=0): 
                         AdujR1 = np.amin([self.r_a*(self.stabLevel - np.median(np.copy(self.maxVArray),axis=0)),self.r_b*self.stabLevel],axis=0)  
                     else:
