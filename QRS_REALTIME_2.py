@@ -298,9 +298,9 @@ class Algorithm:
                     if self.qrsLocs.size == 0: 
                         self.qrsLocs = np.append(self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2]),axis=0)
                     else:
-                        print(self.qrsLocs.shape)
-                        print(np.copy([self.maxP_Buf-self.winsizeEL+2]).shape)
-                        self.qrsLocs = np.concatenate((self.qrsLocs,[np.copy([self.maxP_Buf-self.winsizeEL+2])]),axis=1)
+                        print(self.qrsLocs.size)
+                        print(np.copy([self.maxP_Buf-self.winsizeEL+2]).size)
+                        self.qrsLocs = np.concatenate((self.qrsLocs,[np.copy([self.maxP_Buf-self.winsizeEL+2])]))
                     file.write(str(np.copy([self.maxP_Buf-self.winsizeEL+2])) + '\n')
                     
             ### Step 3: Weight Adjustment ### 
