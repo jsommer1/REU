@@ -82,8 +82,8 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         else:
             ecg1 = np.concatenate((ecg1, [ecg1_entry]))
             
-        print('----')
-        print(ecg1)
+        #print('----')
+        #print(ecg1)
                 
         ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
         ecg2_unsigned = int.from_bytes(packet[4:6], byteorder='little', signed=False)
@@ -341,7 +341,7 @@ while True:
         print(data_length)
         if data_length >= 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
-            print(type(ecg1))
+            print('CHECK 1')
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
             ecg2_algorithm.iterate(ecg2, ECG2_QRS)
             resp_algorithm.iterate(resp, RESP_QRS)
