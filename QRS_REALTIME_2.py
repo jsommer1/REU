@@ -361,7 +361,7 @@ while True:
         
         if data_length > 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
-            print('Iteration number ' + str(counter))
+            print('Iteration number ' + str(iterationcounter))
             iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
             ecg2_algorithm.iterate(ecg2, ECG2_QRS)
