@@ -75,7 +75,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         # Writes in raw data from each lead into the corresponding file & array
         ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
         ecg1_unsigned = int.from_bytes(packet[2:4], byteorder='little', signed=False)
-        #ecg1_entry = ecg1_entry / 1000  # Scales values down
+        ecg1_entry = ecg1_entry / 1000  # Scales values down
         ECG1_RAW.write(str(ecg1_entry) + '\n')
          
         if ecg1.size == 0:
@@ -88,7 +88,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
                 
         ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
         ecg2_unsigned = int.from_bytes(packet[4:6], byteorder='little', signed=False)
-        #ecg2_entry = ecg2_entry / 1000  # Scales values down 
+        ecg2_entry = ecg2_entry / 1000  # Scales values down 
         ECG2_RAW.write(str(ecg2_entry) + '\n')
         if ecg2.size == 0:
             ecg2 = np.append(ecg2, [ecg2_entry])
