@@ -250,9 +250,9 @@ class Algorithm:
         
         if self.isStart == 1: 
             
-            print(self.ELQRS[self.kk-1])
-            print(self.maxV)
-            print('----')
+            #print(self.ELQRS[self.kk-1])
+            #print(self.maxV)
+            #print('----')
             
             if self.ELQRS[self.kk-1] >= self.maxV:
                 self.thEL[self.kk-1] = np.copy(self.ELQRS[self.kk-1])
@@ -268,6 +268,7 @@ class Algorithm:
                     TimerOfPeak = self.winsizeEV-(self.refractoryP-self.winsizeEL)
                     maxP_Buf = maxP
                     self.maxV_Buf = self.maxV
+            print(Timer)
         ### Step 2: Energy Variation Detection ###
         if self.checker2 == 1:
             TimerOfPeak = TimerOfPeak-1
