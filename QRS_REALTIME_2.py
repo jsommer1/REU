@@ -115,6 +115,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         PACK_LABELS.write(str(packnum_entry) + '\n')
+        print('PACK')
         
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
         data_sum = unsignedSum(packnum_entry) + unsignedSum(ecg1_unsigned) + unsignedSum(ecg2_unsigned) + unsignedSum(resp_unsigned) + unsignedSum(ppg_unsigned) 
