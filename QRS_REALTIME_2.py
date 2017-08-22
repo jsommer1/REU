@@ -211,7 +211,7 @@ class Algorithm:
     # It also saves the QRS points in a text file. 
     def iterate(self, data, file):
         # (A) preprocessing
-        #current_time = time.process_time()
+        current_time = time.process_time()
         
         #b = signal.firwin(64,self.cutoffs,pass_zero=False)
         #fSig = signal.filtfilt(b, [1], data, axis=0)   # Signal after bandpass filter
@@ -221,8 +221,8 @@ class Algorithm:
         dSig = self.Fs*np.concatenate(([0], np.diff(sSig,axis=0)),axis=0)
         sigLen = len(sSig)
         
-        #filter_time = time.process_time() - current_time 
-        #print(filter_time)
+        filter_time = time.process_time() - current_time 
+        print('Filter time: ' + str(filter_time))
         #print('---')
             
         #Initializes the arrays, then expands them each iteration after that
