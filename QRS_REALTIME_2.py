@@ -217,7 +217,7 @@ class Algorithm:
         dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
         sigLen = len(sSig)
         
-        filter_time = time.process_time() - dummy_time 
+        filter_time = time.process_time() - current_time 
         print(filter_time)
         print('---')
             
