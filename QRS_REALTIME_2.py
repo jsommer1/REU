@@ -280,7 +280,7 @@ class Algorithm:
                     self.TimerOfPeak = self.winsizeEV-(self.refractoryP-self.winsizeEL)
                     self.maxP_Buf = self.maxP
                     self.maxV_Buf = self.maxV
-            print(self.Timer)
+            #print(self.Timer)
         ### Step 2: Energy Variation Detection ###
         if self.checker2 == 1:
             self.TimerOfPeak = self.TimerOfPeak-1
@@ -377,7 +377,7 @@ while True:
         
         if data_length > 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
-            print('Iteration number ' + str(iterationcounter))
+            #print('Iteration number ' + str(iterationcounter))
             iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
             #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
