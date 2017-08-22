@@ -200,6 +200,8 @@ class Algorithm:
     BufStartP2 = -1
     BufEndP2 = -1
     
+    b = signal.firwin(64,cutoffs,pass_zero=False)
+    
     def __init__(self, lead): 
         self.lead = lead   # Labels the algorithm w/ the corresponding lead
         self.qrsLocs = np.asarray([])  # Stores locations of detected QRS complexes
@@ -211,9 +213,9 @@ class Algorithm:
         # (A) preprocessing
         #current_time = time.process_time()
         
-        b = signal.firwin(64,self.cutoffs,pass_zero=False)
+        #b = signal.firwin(64,self.cutoffs,pass_zero=False)
         #fSig = signal.filtfilt(b, [1], data, axis=0)   # Signal after bandpass filter
-        fSig = signal.lfilter(b, [1], data, axis=0)
+        fSig = signal.lfilter(self.b, [1], data, axis=0)
         sSig = np.sqrt(fSig**2)               # Signal after squaring
         #dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
         dSig = self.Fs*np.concatenate(([0], np.diff(sSig,axis=0)),axis=0)
@@ -403,9 +405,9 @@ while True:
             #print('Iteration number ' + str(iterationcounter))
             #iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
-            ecg2_algorithm.iterate(ecg2, ECG2_QRS)
-            resp_algorithm.iterate(resp, RESP_QRS)
-            ppg_algorithm.iterate(ppg, PPG_QRS)
+            #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
+            #resp_algorithm.iterate(resp, RESP_QRS)
+            #ppg_algorithm.iterate(ppg, PPG_QRS)
            
         iterationtime = time.process_time() - current_time 
         print(iterationtime)
