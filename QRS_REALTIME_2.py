@@ -248,8 +248,8 @@ class Algorithm:
         LargeWin = self.winsizeEV
         
         ### Moving average w/ weight ###
-        #if self.kk == 193:
-        if self.kk == LargeWin: 
+        if self.kk == 193:
+        #if self.kk == LargeWin: 
             for i in np.arange(len(self.BUF1), self.kk-1): 
                 #self.BUF1 = np.append(self.BUF1, [[0]],axis=0)
                 self.BUF1 = np.concatenate((self.BUF1, [[0]]),axis=0)
