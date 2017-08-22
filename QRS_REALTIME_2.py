@@ -115,7 +115,6 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         PACK_LABELS.write(str(packnum_entry) + '\n')
-        print('PACK')
         
         checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
         data_sum = unsignedSum(packnum_entry) + unsignedSum(ecg1_unsigned) + unsignedSum(ecg2_unsigned) + unsignedSum(resp_unsigned) + unsignedSum(ppg_unsigned) 
@@ -210,11 +209,17 @@ class Algorithm:
     # It also saves the QRS points in a text file. 
     def iterate(self, data, file):
         # (A) preprocessing
+        current_time = time.process_time()
+        
         b = signal.firwin(64,self.cutoffs,pass_zero=False)
         fSig = signal.filtfilt(b, [1], data, axis=0)   # Signal after bandpass filter
         sSig = np.sqrt(fSig**2)               # Signal after squaring
         dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
         sigLen = len(sSig)
+        
+        filter_time = time.process_time() - dummy_time 
+        print(filter_time)
+        print('---')
             
         #Initializes the arrays, then expands them each iteration after that
         if self.mem_allocation == 0: 
@@ -387,13 +392,7 @@ while True:
             #resp_algorithm.iterate(resp, RESP_QRS)
             #ppg_algorithm.iterate(ppg, PPG_QRS)
         
-        current_time = time.process_time()
-        iteration_time = current_time - dummy_time 
-        dummy_time = current_time 
-        print(iteration_time)
-        print(iterationcounter)
-        iterationcounter = iterationcounter + 1
-        print('---')
+        
     
     ## TEST CODE: cuts out the program in order to plot stuff
     current_time = time.process_time()
