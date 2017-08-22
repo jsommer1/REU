@@ -188,7 +188,7 @@ class Algorithm:
     mem_allocation = 0     # Dummy counter to initialize these arrays
     
     #kk = winsizeEV
-    kk = 193
+    kk = 192
     
     Timer = -1 
     TimerOfPeak = -1
