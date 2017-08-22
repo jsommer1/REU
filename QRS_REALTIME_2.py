@@ -359,6 +359,8 @@ while True:
         
 iterationcounter = 1
 
+dummy_time = 0
+
 while True: 
     if (ser.in_waiting >= 12):
     
@@ -386,6 +388,9 @@ while True:
     
     ## TEST CODE: cuts out the program in order to plot stuff
     current_time = time.process_time()
+    iteration_time = current_time - dummy_time 
+    dummy_time = current_time 
+    print(iteration_time)
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
 
