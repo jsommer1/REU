@@ -189,6 +189,7 @@ class Algorithm:
     
     kk = winsizeEV
     #kk = 192
+    ## TO DO: FIGURE THIS THING OUT 
     
     Timer = -1 
     TimerOfPeak = -1
