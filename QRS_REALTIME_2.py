@@ -232,11 +232,16 @@ class Algorithm:
             self.thN = np.zeros((sigLen,1))
             self.mem_allocation = 1
         else:
-            self.ELQRS = np.append(self.ELQRS, [0])
-            self.EVQRS = np.append(self.EVQRS, [0])
-            self.thEL = np.append(self.thEL, [self.thEL0])
-            self.thEV = np.append(self.thEV, [0])
-            self.thN = np.append(self.thN, [0])
+            #self.ELQRS = np.append(self.ELQRS, [0])
+            self.ELQRS = np.concatenate((self.ELQRS, [0]))
+            #self.EVQRS = np.append(self.EVQRS, [0])
+            self.EVQRS = np.concatenate((self.EVQRS, [0]))
+            #self.thEL = np.append(self.thEL, [self.thEL0])
+            self.thEL = np.concatenate((self.thEL, [self.thEL0]))
+            #self.thEV = np.append(self.thEV, [0])
+            self.thEV = np.concatenate((self.thEV, [0]))
+            #self.thN = np.append(self.thN, [0])
+            self.thN = np.concatenate((self.thN, [0]))
     
         LargeWin = self.winsizeEV
         
@@ -244,9 +249,12 @@ class Algorithm:
         #if self.kk == 193:
         if self.kk == LargeWin: 
             for i in np.arange(len(self.BUF1), self.kk-1): 
-                self.BUF1 = np.append(self.BUF1, [[0]],axis=0)
-        self.BUF1 = np.append(self.BUF1, [[(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]],axis=0) 
-        self.BUF2 = np.append(self.BUF2, [[(np.sum( dSig[self.kk-self.winsizeEV:self.kk],axis=0 )/self.winsizeEV)]],axis=0)
+                #self.BUF1 = np.append(self.BUF1, [[0]],axis=0)
+                self.BUF1 = np.concatenate((self.BUF1, [0]),axis=0)
+        #self.BUF1 = np.append(self.BUF1, [[(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]],axis=0) 
+        self.BUF1 = np.concatenate((self.BUF1, [(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]),axis=0)
+        #self.BUF2 = np.append(self.BUF2, [[(np.sum( dSig[self.kk-self.winsizeEV:self.kk],axis=0 )/self.winsizeEV)]],axis=0)
+        self.BUF2 = np.concatenate((self.BUF2, [(np.sum( dSig[self.kk-self.winsizeEV:self.kk],axis=0 )/self.winsizeEV)]),axis=0)
         self.ELQRS[self.kk-1] = np.sum( np.copy(self.BUF1[self.kk-self.winsizeEL:self.kk]),axis=0 )/self.winsizeEL 
         self.EVQRS[self.kk-1] = np.sum( np.copy(self.BUF2[self.kk-self.winsizeEV:self.kk]),axis=0 )/self.winsizeEV 
             
@@ -308,7 +316,8 @@ class Algorithm:
                     self.QRScount = self.QRScount + 1
                     if 1 == 1:
                     #if self.qrsLocs.size == 0: 
-                        self.qrsLocs = np.append(self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2]),axis=0)
+                        #self.qrsLocs = np.append(self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2]),axis=0)
+                        self.qrsLocs = np.concatenate((self.qrsLocs, [np.copy([self.maxP_Buf-self.winsizeEL+2])]),axis=0)
                     #else:
                     #    print(self.qrsLocs.size)
                     #    print(np.copy([self.maxP_Buf-self.winsizeEL+2]).size)
