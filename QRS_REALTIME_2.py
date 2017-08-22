@@ -380,7 +380,7 @@ while True:
         if data_length > 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
             #print('Iteration number ' + str(iterationcounter))
-            iterationcounter = iterationcounter + 1
+            #iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
             #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
             #resp_algorithm.iterate(resp, RESP_QRS)
@@ -391,6 +391,9 @@ while True:
     iteration_time = current_time - dummy_time 
     dummy_time = current_time 
     print(iteration_time)
+    print(iterationcounter)
+    iterationcounter = iterationcounter + 1
+    print('---')
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
 
