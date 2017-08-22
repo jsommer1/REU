@@ -386,15 +386,18 @@ while True:
             #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
             #resp_algorithm.iterate(resp, RESP_QRS)
             #ppg_algorithm.iterate(ppg, PPG_QRS)
+        
+        current_time = time.process_time()
+        iteration_time = current_time - dummy_time 
+        dummy_time = current_time 
+        print(iteration_time)
+        print(iterationcounter)
+        iterationcounter = iterationcounter + 1
+        print('---')
     
     ## TEST CODE: cuts out the program in order to plot stuff
     current_time = time.process_time()
-    iteration_time = current_time - dummy_time 
-    dummy_time = current_time 
-    print(iteration_time)
-    print(iterationcounter)
-    iterationcounter = iterationcounter + 1
-    print('---')
+    
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
 
