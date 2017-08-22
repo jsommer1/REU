@@ -187,7 +187,8 @@ class Algorithm:
     thN = np.asarray([])
     mem_allocation = 0     # Dummy counter to initialize these arrays
     
-    kk = winsizeEV
+    #kk = winsizeEV
+    kk = 193
     
     Timer = -1 
     TimerOfPeak = -1
@@ -231,7 +232,8 @@ class Algorithm:
         LargeWin = self.winsizeEV
         
         ### Moving average w/ weight ###
-        if self.kk == LargeWin: 
+        if self.kk == 193:
+        #if self.kk == LargeWin: 
             for i in np.arange(len(self.BUF1), self.kk-1): 
                 self.BUF1 = np.append(self.BUF1, [[0]],axis=0)
         self.BUF1 = np.append(self.BUF1, [[(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]],axis=0) 
