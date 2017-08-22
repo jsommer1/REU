@@ -214,7 +214,8 @@ class Algorithm:
         b = signal.firwin(64,self.cutoffs,pass_zero=False)
         fSig = signal.filtfilt(b, [1], data, axis=0)   # Signal after bandpass filter
         sSig = np.sqrt(fSig**2)               # Signal after squaring
-        dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
+        #dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
+        dSig = self.Fs*np.concatenate(([0], np.diff(sSig,axis=0)),axis=0)
         sigLen = len(sSig)
         
         filter_time = time.process_time() - current_time 
