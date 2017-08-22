@@ -233,15 +233,15 @@ class Algorithm:
             self.mem_allocation = 1
         else:
             #self.ELQRS = np.append(self.ELQRS, [0])
-            self.ELQRS = np.concatenate((self.ELQRS, [0]))
+            self.ELQRS = np.concatenate((self.ELQRS, [[0]]))
             #self.EVQRS = np.append(self.EVQRS, [0])
-            self.EVQRS = np.concatenate((self.EVQRS, [0]))
+            self.EVQRS = np.concatenate((self.EVQRS, [[0]]))
             #self.thEL = np.append(self.thEL, [self.thEL0])
-            self.thEL = np.concatenate((self.thEL, [self.thEL0]))
+            self.thEL = np.concatenate((self.thEL, [[self.thEL0]]))
             #self.thEV = np.append(self.thEV, [0])
-            self.thEV = np.concatenate((self.thEV, [0]))
+            self.thEV = np.concatenate((self.thEV, [[0]]))
             #self.thN = np.append(self.thN, [0])
-            self.thN = np.concatenate((self.thN, [0]))
+            self.thN = np.concatenate((self.thN, [[0]]))
     
         LargeWin = self.winsizeEV
         
