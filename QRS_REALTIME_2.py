@@ -403,9 +403,9 @@ while True:
             #print('Iteration number ' + str(iterationcounter))
             #iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
-            #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
-            #resp_algorithm.iterate(resp, RESP_QRS)
-            #ppg_algorithm.iterate(ppg, PPG_QRS)
+            ecg2_algorithm.iterate(ecg2, ECG2_QRS)
+            resp_algorithm.iterate(resp, RESP_QRS)
+            ppg_algorithm.iterate(ppg, PPG_QRS)
            
         iterationtime = time.process_time() - current_time 
         print(iterationtime)
