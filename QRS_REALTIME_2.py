@@ -372,6 +372,8 @@ dummy_time = 0
 while True: 
     if (ser.in_waiting >= 12):
     
+        current_time = time.process_time()
+    
     # Reads in & saves one packet of serial data
         ecg1, ecg2, resp, ppg = readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG_RAW, PACK_LABELS, CHECKSUMS)
 
@@ -387,7 +389,7 @@ while True:
         
         if data_length > 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
-            current_time = time.process_time()
+            
             
             #print('Iteration number ' + str(iterationcounter))
             #iterationcounter = iterationcounter + 1
@@ -395,10 +397,10 @@ while True:
             #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
             #resp_algorithm.iterate(resp, RESP_QRS)
             #ppg_algorithm.iterate(ppg, PPG_QRS)
-            iterationtime = time.process_time() - current_time 
-            print(iterationtime)
-            print('--')
-            
+           
+        iterationtime = time.process_time() - current_time 
+        print(iterationtime)
+        print('--')   
         
     
     ## TEST CODE: cuts out the program in order to plot stuff
