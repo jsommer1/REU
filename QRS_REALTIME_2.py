@@ -250,7 +250,7 @@ class Algorithm:
         if self.kk == LargeWin: 
             for i in np.arange(len(self.BUF1), self.kk-1): 
                 #self.BUF1 = np.append(self.BUF1, [[0]],axis=0)
-                self.BUF1 = np.concatenate((self.BUF1, [0]),axis=0)
+                self.BUF1 = np.concatenate((self.BUF1, [[0]]),axis=0)
         #self.BUF1 = np.append(self.BUF1, [[(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]],axis=0) 
         self.BUF1 = np.concatenate((self.BUF1, [(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]),axis=0)
         #self.BUF2 = np.append(self.BUF2, [[(np.sum( dSig[self.kk-self.winsizeEV:self.kk],axis=0 )/self.winsizeEV)]],axis=0)
