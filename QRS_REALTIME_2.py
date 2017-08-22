@@ -317,7 +317,7 @@ class Algorithm:
                     if 1 == 1:
                     #if self.qrsLocs.size == 0: 
                         #self.qrsLocs = np.append(self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2]),axis=0)
-                        self.qrsLocs = np.concatenate((self.qrsLocs, [[self.maxP_Buf-self.winsizeEL+2]]),axis=1)
+                        self.qrsLocs = np.concatenate((self.qrsLocs, [self.maxP_Buf-self.winsizeEL+2]),axis=0)
                     #else:
                     #    print(self.qrsLocs.size)
                     #    print(np.copy([self.maxP_Buf-self.winsizeEL+2]).size)
