@@ -4,14 +4,15 @@
 # In[ ]:
 
 # This code is a modified version of QRS_Detection.py that performs QRS detection in real-time on incoming serial data.
-# It is based around a custom class called "Algorithm" that implements the particular detection algorithm, so if 
+# The particular algorithm uses spatiotemporal characteristics of the QRS complex to detect them, and is based on moving average 
+# filters. The algorithm only takes into account one lead at a time, so ideally this algorithm will be modified or replaced in the future
+# in order to add one that accepts multiple vectors as inputs. 
+# The code itself is based around a custom class called "Algorithm" that implements the particular detection algorithm, so if 
 # someboy would like to change algorithms, modification to this class should be almost all that is required. There is 
 # also a small if statement that occurs later on (I have pointed it out in the code) that also would require fixing,
 # but other than that, the class should be the only thing that needs to be changed in order to swap algorithms. 
 # Joe Sommer 2017 
 
-import matplotlib
-matplotlib.use('Agg')
 
 import numpy as np
 from scipy import signal, io 
@@ -21,37 +22,36 @@ import struct
 import time
 import datetime
 
-# Sets up the serial port
+# Sets up the serial port to read incoming data 
 ser = serial.Serial() 
 ser.bytesize = 8      
 ser.baudrate = 115200  
-ser.port = '/dev/ttyAMA0'
+ser.port = '/dev/ttyAMA0'  # The reconfigured UART for the Raspberry Pi 3 
 ser.stopbits = 1
 ser.open()
 Fs = 200  # Serial data comes in at rate of every 5ms = 200Hz
 
-# Initializes 4 waveform arrays 
+# Initializes 4 arrays to store each lead's raw data in 
 ecg1 = np.asarray([])
 ecg2 = np.asarray([])
 resp = np.asarray([])
 ppg = np.asarray([])
 
-# Initializes 10 textfiles: 4 to store raw data, 4 to store QRS points, 2 to store packet labels and checksum values
+# Initializes 8 textfiles: 4 to store raw data, 2 to store QRS points for ECG1 and ECG2, 2 to store packet labels and checksum values
 rightnow = datetime.datetime.now()
-ECG1_RAW = open('ECG1_RAW' + str(rightnow.isoformat()) + '.txt', 'a')
-ECG1_QRS = open('ECG1_QRS' + str(rightnow.isoformat()) + '.txt', 'a')
-ECG2_RAW = open('ECG2_RAW' + str(rightnow.isoformat()) + '.txt', 'a')
-ECG2_QRS = open('ECG2_QRS' + str(rightnow.isoformat()) + '.txt', 'a')
-RESP_RAW = open('RESP_RAW' + str(rightnow.isoformat()) + '.txt', 'a')
-RESP_QRS = open('RESP_QRS' + str(rightnow.isoformat()) + '.txt', 'a')  # Does the resp even have QRS points?
-PPG_RAW = open('PPG_RAW' + str(rightnow.isoformat()) + '.txt', 'a')
-PPG_QRS = open('PPG_QRS' + str(rightnow.isoformat()) + '.txt', 'a')
-PACK_LABELS = open('PACK_LABELS' + str(rightnow.isoformat()) + '.txt', 'a')
-CHECKSUMS = open('CHECKSUMS' + str(rightnow.isoformat()) + '.txt', 'a')
+ECG1_RAW = open('ECG1_RAW' + str(rightnow.isoformat()) + '.txt', 'a')         # Raw data from ECG 1 
+ECG1_QRS = open('ECG1_QRS' + str(rightnow.isoformat()) + '.txt', 'a')         # Locations of QRS complexes from ECG 1
+ECG2_RAW = open('ECG2_RAW' + str(rightnow.isoformat()) + '.txt', 'a')         # Raw data from ECG 2
+ECG2_QRS = open('ECG2_QRS' + str(rightnow.isoformat()) + '.txt', 'a')         # Locations of QRS complexes from ECG 2
+RESP_RAW = open('RESP_RAW' + str(rightnow.isoformat()) + '.txt', 'a')         # Raw respiratory data
+PPG_RAW = open('PPG_RAW' + str(rightnow.isoformat()) + '.txt', 'a')           # Raw data from PPG 
+PACK_LABELS = open('PACK_LABELS' + str(rightnow.isoformat()) + '.txt', 'a')   # Labels of each data packet, should increase by 1 each time
+CHECKSUMS = open('CHECKSUMS' + str(rightnow.isoformat()) + '.txt', 'a')       # Checksum values of each data packet
 
 
 
-# This function converts a 16-bit unsigned int into two 8-bit unsigned ints and returns their sum.
+# This function converts a 16-bit unsigned int into two 8-bit unsigned ints and returns their sum. It is used in order to read and 
+# save data from the serial input. 
 def unsignedSum(unsigned_sixteen): 
     mask1 = int('0b0000000011111111',2)
     mask2 = int('0b1111111100000000',2)
@@ -64,84 +64,80 @@ def unsignedSum(unsigned_sixteen):
 # This function reads in data from the serial at a rate of 1 packet (12 bytes/6 shorts) every 5ms (200Hz). 
 # It stores the data in the appropriate text files. It also checks for data corruption and throws an error message
 # if it detects corruption. 
+# The function assumes that it is called when there are at least 12 bytes available to read (ser.in_waiting >= 12) 
 def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG_RAW, PACK_LABELS, CHECKSUMS):
-    packet = b''
-    #if (ser.in_waiting >= 12):
-    if 1 == 1: 
-        for i in range(12): 
-            CURRENTINPUT = ser.read()
-            packet = packet + CURRENTINPUT 
+    # Reads in one packet of data (12 bytes) 
+    packet = b''  
+    for i in range(12): 
+        CURRENTINPUT = ser.read()
+        packet = packet + CURRENTINPUT 
         
-        # Writes in raw data from each lead into the corresponding file & array
-        ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
-        ecg1_unsigned = int.from_bytes(packet[2:4], byteorder='little', signed=False)
-        ecg1_entry = ecg1_entry / 1000  # Scales values down
-        ECG1_RAW.write(str(ecg1_entry) + '\n')
-         
-        if ecg1.size == 0:
-            ecg1 = np.append(ecg1, [ecg1_entry])
-        else:
-            ecg1 = np.concatenate((ecg1, [ecg1_entry]))
-            
-        #print('----')
-        #print(ecg1)
+    ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
+    ecg1_unsigned = int.from_bytes(packet[2:4], byteorder='little', signed=False)
+    ecg1_entry = ecg1_entry / 1000  # Scales values down
+    ECG1_RAW.write(str(ecg1_entry) + '\n')
+    if ecg1.size == 0:
+        ecg1 = np.append(ecg1, [ecg1_entry])
+    else:
+        ecg1 = np.concatenate((ecg1, [ecg1_entry]))  # I use concatenate here to avoid creating a new array each time
                 
-        ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
-        ecg2_unsigned = int.from_bytes(packet[4:6], byteorder='little', signed=False)
-        ecg2_entry = ecg2_entry / 1000  # Scales values down 
-        ECG2_RAW.write(str(ecg2_entry) + '\n')
-        if ecg2.size == 0:
-            ecg2 = np.append(ecg2, [ecg2_entry])
-        else:
-            ecg2 = np.concatenate((ecg2, [ecg2_entry]))
+    ecg2_entry = int.from_bytes(packet[4:6], byteorder='little', signed=True)
+    ecg2_unsigned = int.from_bytes(packet[4:6], byteorder='little', signed=False)
+    ecg2_entry = ecg2_entry / 1000  # Scales values down from volts to mV
+    ECG2_RAW.write(str(ecg2_entry) + '\n')
+    if ecg2.size == 0:
+        ecg2 = np.append(ecg2, [ecg2_entry])
+    else:
+        ecg2 = np.concatenate((ecg2, [ecg2_entry]))
         
-        resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=True)
-        resp_unsigned = int.from_bytes(packet[6:8], byteorder='little', signed=False)
-        #resp_entry = resp_entry / 1000  # Scales values down 
-        RESP_RAW.write(str(resp_entry) + '\n')
-        if resp.size == 0:
-            resp = np.append(resp, [resp_entry])
-        else:
-            resp = np.concatenate((resp, [resp_entry]))
+    resp_entry = int.from_bytes(packet[6:8], byteorder='little', signed=True)
+    resp_unsigned = int.from_bytes(packet[6:8], byteorder='little', signed=False)
+    #resp_entry = resp_entry / 1000   # Scales values down from volts to mV, might not be necessary here 
+    RESP_RAW.write(str(resp_entry) + '\n')
+    if resp.size == 0:
+        resp = np.append(resp, [resp_entry])
+    else:
+        resp = np.concatenate((resp, [resp_entry]))
         
-        ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=True)
-        ppg_unsigned = int.from_bytes(packet[8:10], byteorder='little', signed=False)
-        #ppg_entry = ppg_entry / 1000  # Scales values down 
-        PPG_RAW.write(str(ppg_entry) + '\n') 
-        if ppg.size == 0:
-            ppg = np.append(ppg, [ppg_entry])
-        else:
-            ppg = np.concatenate((ppg, [ppg_entry]))
+    ppg_entry = int.from_bytes(packet[8:10], byteorder='little', signed=True)
+    ppg_unsigned = int.from_bytes(packet[8:10], byteorder='little', signed=False)
+    #ppg_entry = ppg_entry / 1000   # Scales values down from volts to mV, might not be necessary here 
+    PPG_RAW.write(str(ppg_entry) + '\n') 
+    if ppg.size == 0:
+        ppg = np.append(ppg, [ppg_entry])
+    else:
+        ppg = np.concatenate((ppg, [ppg_entry]))
         
-        packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
-        PACK_LABELS.write(str(packnum_entry) + '\n')
+    packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
+    PACK_LABELS.write(str(packnum_entry) + '\n')
         
-        checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
-        data_sum = unsignedSum(packnum_entry) + unsignedSum(ecg1_unsigned) + unsignedSum(ecg2_unsigned) + unsignedSum(resp_unsigned) + unsignedSum(ppg_unsigned) 
-        CHECKSUMS.write('---\n')
-        CHECKSUMS.write('Checksum: ' + str(checksum_entry) + ' Data sum: ' + str(data_sum) + '\n')
-        CHECKSUMS.write('Comparison: ' + str(checksum_entry - data_sum) + '\n')
-        
-        if checksum_entry != data_sum:
-            CHECKSUMS.write('DATA DOESN\'T ADD TO CHECKSUM, SOMETHING BAD HAPPENED UP HERE^^^ \n')
-            #break 
+    checksum_entry = int.from_bytes(packet[10:12], byteorder='little', signed=False)
+    data_sum = unsignedSum(packnum_entry) + unsignedSum(ecg1_unsigned) + unsignedSum(ecg2_unsigned) + unsignedSum(resp_unsigned) + unsignedSum(ppg_unsigned) 
+    CHECKSUMS.write('---\n')
+    CHECKSUMS.write('Checksum: ' + str(checksum_entry) + ' Data sum: ' + str(data_sum) + '\n')
+    CHECKSUMS.write('Difference (should be 0): ' + str(checksum_entry - data_sum) + '\n')
+    # Checks for corruption in data     
+    if checksum_entry != data_sum:
+        CHECKSUMS.write('DATA DOESN\'T ADD TO CHECKSUM, POSSIBLY CORRUPTED \n')
+
     return ecg1, ecg2, resp, ppg
 
 
 
-#     Sets up the Algorithm Class, which implements the particular QRS complex detection method described in 
+#     Sets up the Algorithm Class, which attempts to implement the particular QRS complex detection method described in 
 # QRS_Detection.py. It initializes parameters and a function that calls one iteration of the algorithm. 
 # This algorithm will be used by reading in a single data packet, calling the iteration function, and repeating these
 # two actions in a continous loop. 
+#     NOTE: This code is still buggy and not ready to be practically used.  
 
 class Algorithm: 
     
     # Initial parameters
     Fs = 200                 # Data packs come in every 5ms = 200Hz
-    wsize1 = 0.15            # MAF size for Energy Level Detection, size of 1st MAF
+    wsize1 = 0.15            # MAF (moving average filter) size for Energy Level Detection, size of 1st MAF
     wsize2 = 0.2             # MAF size for Energy Variation Detection, size of 2nd MAF
     refractory_time = 0.15   # Refractory Period 
-    thEL0 = 0.1              # Initial value for EL threshold
+    thEL0 = 0.1              # Initial value for energy level threshold
     stabLevel = 0.5          # Stabilization Reference Voltage
     r_a = 0.1                # application rate for weight adjustment
     r_b = 0.05               # application rate for weight adjustment
@@ -170,8 +166,7 @@ class Algorithm:
     maxV = 1
     QRScount = 0
     
-    cutoffs = np.array([(5/(Fs/2)),(25/(Fs/2))])
-    
+    cutoffs = np.array([(5/(Fs/2)),(25/(Fs/2))])    # Cutoff frequencies for the bandpass filter (5Hz - 25Hz)
     
     maxVArray = np.zeros((ArrayL,1))
     maxDifBuf = np.zeros((ArrayL,1))
@@ -179,7 +174,7 @@ class Algorithm:
     BUF1 = np.zeros((winsizeEL,1))
     BUF2 = np.zeros((winsizeEV,1))
     
-    # Expand the following w/in the iterate array
+    # Expand the following arrays within the iterate array
     ELQRS = np.asarray([])
     EVQRS = np.asarray([])
     thEL = np.asarray([])  # Threshold for EL (Adaptive threshold)
@@ -187,30 +182,32 @@ class Algorithm:
     thN = np.asarray([])
     mem_allocation = 0     # Dummy counter to initialize these arrays
     
-    kk = winsizeEV
+    kk = winsizeEV   # Counter for data point to process
     #kk = 192
     ## TO DO: FIGURE THIS THING OUT 
     
+    # Initializes variables that are calculated later
     Timer = -1 
     TimerOfPeak = -1
-    
     maxP = -1
     maxP_Buf = -1
-    
     BufStartP2 = -1
     BufEndP2 = -1
     
+    # Window coefficients for the filter in the iterate function
     b = signal.firwin(64,cutoffs,pass_zero=False)
     
+    
+    # Initializes the algorithm object by taking in a lead, which at this stage is more for labelling purposes than anything
+    # Also sets up an empty array to store QRS locations in 
     def __init__(self, lead): 
         self.lead = lead   # Labels the algorithm w/ the corresponding lead
         self.qrsLocs = np.asarray([])  # Stores locations of detected QRS complexes
         
         
     # This function runs 1 iteration of the algorithm & is to be called after reading in a single data point.
-    # It also saves the QRS points in a text file. 
+    # It also saves any detected QRS points in a text file. 
     def iterate(self, data, file):
-        # (A) preprocessing
         current_time = time.process_time()
         
         #b = signal.firwin(64,self.cutoffs,pass_zero=False)
@@ -347,12 +344,9 @@ class Algorithm:
          
 
 
-# Initializes algorithms to run on each of the 4 leads
+# Initializes algorithms to run on the 2 ECGs (respiratory and PPG data don't follow QRS complex characteristics)
 ecg1_algorithm = Algorithm(ecg1)
 ecg2_algorithm = Algorithm(ecg2)
-resp_algorithm = Algorithm(resp)
-ppg_algorithm = Algorithm(ppg)
-
 
 
 ## TEST CODE: sets up timer to end the program in order to plot results. 
@@ -380,6 +374,8 @@ iterationcounter = 1
 
 dummy_time = 0
 
+
+# The main loop of the program. 
 while True: 
     if (ser.in_waiting >= 12):
     
@@ -394,10 +390,7 @@ while True:
     # algorithm later on, but other than this small detail and the algorithm class itself, no other modification should
     # be required. 
         data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
-        
-        #print(data_length)
-       
-        
+               
         if data_length > 192:  # technicality for filtering purposes 
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
             
@@ -406,17 +399,16 @@ while True:
             #iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
             #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
-            #resp_algorithm.iterate(resp, RESP_QRS)
-            #ppg_algorithm.iterate(ppg, PPG_QRS)
+            
            
         iterationtime = time.process_time() - current_time 
         print(iterationtime)
         print('--')   
         
     
-    ## TEST CODE: cuts out the program in order to plot stuff
+    # TEST CODE: ends the program after TIMEOUT seconds for testing purposes
+    # In the final implementation of the program, this bit of code should be removed. 
     current_time = time.process_time()
-    
     if current_time - start_time >= TIMEOUT: 
         break    # Stops reading serial data if the timeout has passed 
 
@@ -431,16 +423,5 @@ ECG1_QRS.close()
 ECG2_RAW.close()
 ECG2_QRS.close()
 RESP_RAW.close()
-RESP_QRS.close()
 PPG_RAW.close()
-PPG_QRS.close()
 
-
-
-## TEST CODE: this part is to graph the results at the end and see if everything recorded properly 
-#testloc = ecg1_algorithm.qrsLocs
-#time = np.arange(len(ecg1)) / 200
-#QRS_time = time[np.ix_(testloc.astype(int))]
-#QRS_locations = ecg1[np.ix_(testloc.astype(int))]
-#plt.plot(time, testloc, 'b-', QRS_time, QRS_locations, 'ro')
-#plt.show()
