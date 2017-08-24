@@ -3,14 +3,27 @@
 
 # In[ ]:
 
-# This code is a modified version of QRS_Detection.py that performs QRS detection in real-time on incoming serial data.
-# The particular algorithm uses spatiotemporal characteristics of the QRS complex to detect them, and is based on moving average 
+#       This code is a modified version of QRS_Detection.py that performs QRS detection in real-time on incoming serial data.
+#       The particular algorithm uses spatiotemporal characteristics of the QRS complex to detect them, and is based on moving average 
 # filters. The algorithm only takes into account one lead at a time, so ideally this algorithm will be modified or replaced in the future
 # in order to add one that accepts multiple vectors as inputs. 
-# The code itself is based around a custom class called "Algorithm" that implements the particular detection algorithm, so if 
+#       The code itself is based around a custom class called "Algorithm" that implements the particular detection algorithm, so if 
 # someboy would like to change algorithms, modification to this class should be almost all that is required. There is 
 # also a small if statement that occurs later on (I have pointed it out in the code) that also would require fixing,
 # but other than that, the class should be the only thing that needs to be changed in order to swap algorithms. 
+
+#       As of August 24, 2017, this code is still buggy: when real-time results are compared to processing the recorded data with 
+# QRS_Detection.py, the real-time program doesn't return all the points it should. The locations that it does return are also 
+# off from the proper results by between abou 20 to 40 points, with each point being off by a different amount. 
+#       The filtering process also needs modification: the data getting filtered needs to cut off older data points in order to stay the 
+# minimum size necessary for filtering. The scipy filter itself may also be faulty; I changed the filter from filtfilt to lfilter in order
+# to try and accomodate real-time processing. 
+
+#       For testing purposes, this code prompts users to input a time limit for the program. This is pointed out within the program too;
+# once the code is properly implemented, users may want to remove this feature. 
+
+#       See README.md for info on connecting the Raspberry Pi 3 GPIO pins to the serial output. 
+
 # Joe Sommer 2017 
 
 
@@ -31,7 +44,7 @@ ser.stopbits = 1
 ser.open()
 Fs = 200  # Serial data comes in at rate of every 5ms = 200Hz
 
-# Initializes 4 arrays to store each lead's raw data in 
+# Initializes 4 arrays to store each lead's raw data  
 ecg1 = np.asarray([])
 ecg2 = np.asarray([])
 resp = np.asarray([])
@@ -74,7 +87,7 @@ def readAndSaveRaw(ser, ecg1, ecg2, resp, ppg, ECG1_RAW, ECG2_RAW, RESP_RAW, PPG
         
     ecg1_entry = int.from_bytes(packet[2:4], byteorder='little', signed=True)
     ecg1_unsigned = int.from_bytes(packet[2:4], byteorder='little', signed=False)
-    ecg1_entry = ecg1_entry / 1000  # Scales values down
+    ecg1_entry = ecg1_entry / 1000  # Scales values down from volts to mV
     ECG1_RAW.write(str(ecg1_entry) + '\n')
     if ecg1.size == 0:
         ecg1 = np.append(ecg1, [ecg1_entry])
@@ -182,11 +195,11 @@ class Algorithm:
     thN = np.asarray([])
     mem_allocation = 0     # Dummy counter to initialize these arrays
     
-    kk = winsizeEV   # Counter for data point to process
-    #kk = 192
-    ## TO DO: FIGURE THIS THING OUT 
-    
-    # Initializes variables that are calculated later
+    kk = winsizeEV   # Counter 
+    # If the signal length gets readjusted each time, is this even necssary? couldn't I just take the last index of the array?
+    # maybe set kk = len(data) or whatever
+       
+    # Initializes variables that are calculated later within the iterate function 
     Timer = -1 
     TimerOfPeak = -1
     maxP = -1
@@ -210,12 +223,11 @@ class Algorithm:
     def iterate(self, data, file):
         current_time = time.process_time()
         
-        #b = signal.firwin(64,self.cutoffs,pass_zero=False)
-        #fSig = signal.filtfilt(b, [1], data, axis=0)   # Signal after bandpass filter
-        fSig = signal.lfilter(self.b, [1], data, axis=0)
-        sSig = np.sqrt(fSig**2)               # Signal after squaring
-        #dSig = self.Fs*np.append([0], np.diff(sSig,axis=0),axis=0) 
-        dSig = self.Fs*np.concatenate(([0], np.diff(sSig,axis=0)),axis=0)
+        # Preprocessing, filters the signal 
+        #fSig = signal.filtfilt(b, [1], data, axis=0)                        
+        fSig = signal.lfilter(self.b, [1], data, axis=0)                     # Signal after bandpass filter
+        sSig = np.sqrt(fSig**2)                                              # Signal after squaring
+        dSig = self.Fs*np.concatenate(([0], np.diff(sSig,axis=0)),axis=0)    # Signal after differentiating 
         sigLen = len(sSig)
         
         filter_time = time.process_time() - current_time 
@@ -231,15 +243,10 @@ class Algorithm:
             self.thN = np.zeros((sigLen,1))
             self.mem_allocation = 1
         else:
-            #self.ELQRS = np.append(self.ELQRS, [0])
             self.ELQRS = np.concatenate((self.ELQRS, [[0]]))
-            #self.EVQRS = np.append(self.EVQRS, [0])
             self.EVQRS = np.concatenate((self.EVQRS, [[0]]))
-            #self.thEL = np.append(self.thEL, [self.thEL0])
             self.thEL = np.concatenate((self.thEL, [[self.thEL0]]))
-            #self.thEV = np.append(self.thEV, [0])
             self.thEV = np.concatenate((self.thEV, [[0]]))
-            #self.thN = np.append(self.thN, [0])
             self.thN = np.concatenate((self.thN, [[0]]))
     
         LargeWin = self.winsizeEV
@@ -248,11 +255,8 @@ class Algorithm:
         if self.kk == 193:
         #if self.kk == LargeWin: 
             for i in np.arange(len(self.BUF1), self.kk-1): 
-                #self.BUF1 = np.append(self.BUF1, [[0]],axis=0)
                 self.BUF1 = np.concatenate((self.BUF1, [[0]]),axis=0)
-        #self.BUF1 = np.append(self.BUF1, [[(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]],axis=0) 
         self.BUF1 = np.concatenate((self.BUF1, [[(np.sum( sSig[self.kk-self.winsizeEL:self.kk],axis=0 )/self.winsizeEL)]]),axis=0)
-        #self.BUF2 = np.append(self.BUF2, [[(np.sum( dSig[self.kk-self.winsizeEV:self.kk],axis=0 )/self.winsizeEV)]],axis=0)
         self.BUF2 = np.concatenate((self.BUF2, [[(np.sum( dSig[self.kk-self.winsizeEV:self.kk],axis=0 )/self.winsizeEV)]]),axis=0)
         self.ELQRS[self.kk-1] = np.sum( np.copy(self.BUF1[self.kk-self.winsizeEL:self.kk]),axis=0 )/self.winsizeEL 
         self.EVQRS[self.kk-1] = np.sum( np.copy(self.BUF2[self.kk-self.winsizeEV:self.kk]),axis=0 )/self.winsizeEV 
@@ -263,24 +267,10 @@ class Algorithm:
             self.maxV = np.copy(self.ELQRS[self.kk-1])
             self.maxP = self.kk - 1 
             self.isStart = 1
-            
-            #print(self.ELQRS[self.kk-1])
-            #print(self.maxV)
-        
-        #print(self.ELQRS[self.kk-1])
-        #print(self.maxV)
-        
         if self.ELQRS[self.kk-1] < self.thN[self.kk-1]:
             self.thN[self.kk-1] = np.copy(self.ELQRS[self.kk-1]) 
-        #print(self.ELQRS[self.kk-1])
-        #print(self.maxV)
         
-        if self.isStart == 1: 
-            
-            #print(self.ELQRS[self.kk-1])
-            #print(self.maxV)
-            #print('----')
-            
+        if self.isStart == 1:             
             if self.ELQRS[self.kk-1] >= self.maxV:
                 self.thEL[self.kk-1] = np.copy(self.ELQRS[self.kk-1])
                 self.maxV = np.copy(self.ELQRS[self.kk-1])  
@@ -295,7 +285,7 @@ class Algorithm:
                     self.TimerOfPeak = self.winsizeEV-(self.refractoryP-self.winsizeEL)
                     self.maxP_Buf = self.maxP
                     self.maxV_Buf = self.maxV
-            #print(self.Timer)
+        
         ### Step 2: Energy Variation Detection ###
         if self.checker2 == 1:
             self.TimerOfPeak = self.TimerOfPeak-1
@@ -313,14 +303,7 @@ class Algorithm:
                 DiffSumCheck2 = np.amin(np.copy(self.EVQRS[(self.maxP_Buf+self.diffWinsize-1):self.BufEndP2]),axis=0)  
                 if self.qrsLocs.size == 0 or (DiffSumCheck1-DiffSumCheck2>self.thEVlimit and DiffSumCheck1*DiffSumCheck2<0 and DiffSumCheck1>self.thEVub and DiffSumCheck2<self.thEVlb and DiffSumCheck1<self.thEVub2 and DiffSumCheck2>self.thEVlb2):
                     self.QRScount = self.QRScount + 1
-                    if 1 == 1:
-                    #if self.qrsLocs.size == 0: 
-                        #self.qrsLocs = np.append(self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2]),axis=0)
-                        self.qrsLocs = np.concatenate((self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2])),axis=0)
-                    #else:
-                    #    print(self.qrsLocs.size)
-                    #    print(np.copy([self.maxP_Buf-self.winsizeEL+2]).size)
-                    #    self.qrsLocs = np.concatenate((self.qrsLocs,[np.copy([self.maxP_Buf-self.winsizeEL+2])]))
+                    self.qrsLocs = np.concatenate((self.qrsLocs, np.copy([self.maxP_Buf-self.winsizeEL+2])),axis=0)
                     file.write(str(np.copy([self.maxP_Buf-self.winsizeEL+2])) + '\n')
                     
             ### Step 3: Weight Adjustment ### 
@@ -340,7 +323,7 @@ class Algorithm:
         if self.thEL[self.kk] < self.r_nr * self.thN[self.kk-1]:
             self.thEL[self.kk] = self.r_nr * np.copy(self.thN[self.kk-1])
         
-        self.kk = self.kk + 1
+        self.kk = self.kk + 1 #is this necessary?
          
 
 
@@ -349,7 +332,8 @@ ecg1_algorithm = Algorithm(ecg1)
 ecg2_algorithm = Algorithm(ecg2)
 
 
-## TEST CODE: sets up timer to end the program in order to plot results. 
+## TEST CODE: sets up timer to end the program for testing purposes. 
+# Once this program is ready to be used, users may want to remove this part
 TIMEOUT = 3
 dummy = 1
 while dummy == 1:    # Stops reading data after TIMEOUT seconds. User inputs value for TIMEOUT
@@ -370,15 +354,13 @@ while True:
         break
 
         
+        
 iterationcounter = 1
-
 dummy_time = 0
-
 
 # The main loop of the program. 
 while True: 
     if (ser.in_waiting >= 12):
-    
         current_time = time.process_time()
     
     # Reads in & saves one packet of serial data
@@ -389,17 +371,15 @@ while True:
     # is added in order to meet this minimum length. This part may require modification in order to switch to another 
     # algorithm later on, but other than this small detail and the algorithm class itself, no other modification should
     # be required. 
-        data_length = len(ecg1)   # doesn't necessarily have to be ecg1, all waveforms have same length
+        data_length = len(ecg1)   # Doesn't necessarily have to be ecg1, all waveforms have same length
                
-        if data_length > 192:  # technicality for filtering purposes 
+        # Since the data must be longer than the filter length in order to be filtered, the loop only starts the iteration process
+        # once the data array is longer than 192. 
+        if data_length > 192:  
         #if data_length >= ecg1_algorithm.winsizeEV - 1:
             
-            
-            #print('Iteration number ' + str(iterationcounter))
-            #iterationcounter = iterationcounter + 1
             ecg1_algorithm.iterate(ecg1, ECG1_QRS)
             #ecg2_algorithm.iterate(ecg2, ECG2_QRS)
-            
            
         iterationtime = time.process_time() - current_time 
         print(iterationtime)
