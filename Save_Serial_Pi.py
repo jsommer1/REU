@@ -2,10 +2,15 @@
 # coding: utf-8
 
 # In[ ]:
-# This code is to be run from a Raspberry Pi 3 with reconfigured UART. It reads in serial data in packets of 12 bytes (6 shorts) every 
-# 5ms and writes the data into 6 text files: 4 for each lead's waveform and 2 for package labels and checksum values. 
-# The code also compares the data to the checksum value in order to check for corruption of data. 
-# Joe Sommer 2017 
+
+#       This code is to be run from a Raspberry Pi 3 with reconfigured UART. It reads in serial data in packets of 12 bytes (6 shorts) every 
+# 5ms and writes the data into 6 text files: 4 for each lead's waveform and 2 for package labels and checksum values. It also compares
+# the data to the checksum value in order to check for data corruption. 
+#       The program prompts the user to put in a time limit, then stops reading data after the time limit has passed. 
+
+#       See the Raspberry Pi section of README.md to see how to connect the Raspberry Pi 3 GPIO pins to the serial output. 
+# Joe Sommer, 2017 
+
 
 import serial 
 import time
@@ -31,7 +36,6 @@ ser.open()
 
 # Creates 4 text files to save data from different leads (ECG1, ECG2, Resp, and PPG) and 2 more to save checksum values & packet numbers
 rightnow = datetime.datetime.now()
-
 ecg1 = open('ECG1DATA' + str(rightnow.isoformat()) + '.txt', 'a')  
 ecg2 = open('ECG2DATA' + str(rightnow.isoformat()) + '.txt', 'a')
 resp = open('RESPDATA' + str(rightnow.isoformat()) + '.txt', 'a')
@@ -40,7 +44,7 @@ checksum = open('CHECKSUM' + str(rightnow.isoformat()) + '.txt', 'a')
 packnums = open('PACKNUMS' + str(rightnow.isoformat()) + '.txt', 'a')
 
 
-# Starts stopwatch for timeout purposes, this is here because IDK how to properly use PySerial's timeout functions
+# Marks down start time for timeout purposes
 start_time = time.process_time()
 
 
@@ -52,7 +56,7 @@ while True:
         break
     
         
-# This function converts a 16-bit unsigned int into two 8-bit unsigned ints and returns their sum
+# This function converts a 16-bit unsigned int into two 8-bit unsigned ints and returns their sum. To be used to calculate checksum
 def unsignedSum(unsigned_sixteen): 
     mask1 = int('0b0000000011111111',2)
     mask2 = int('0b1111111100000000',2)
@@ -86,10 +90,9 @@ while True:
         ppg_unsigned = int.from_bytes(packet[8:10], byteorder='little', signed=False)
         ppg.write(str(ppg_entry) + '\n') 
         
-        # Gets packet numbers 
+        # Records packet numbers. These should increase by 1 every time
         packnum_entry = int.from_bytes(packet[0:2], byteorder='little', signed=False)
         packnums.write(str(packnum_entry) + '\n')
-       
     
         # Calculates sum of unsigned byte values of data & compares sum to checksum value in order to check for corrupt data. 
         # Displays an error message and ends program if values don't match.  
